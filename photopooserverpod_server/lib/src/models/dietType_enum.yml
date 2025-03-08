@@ -1,0 +1,6 @@
+enum: DietTypeEnum
+serialized: byName
+values:
+  - vegan
+  - vegetarian
+  - omnivore

@@ -1,0 +1,17 @@
+### Holds a user of photopoo
+class: User
+table: user
+fields:
+  ### The contents of the user
+  username: String
+  passwrord: String
+  email: String
+  phone: String
+  age: int
+  diet: DietTypeEnum
+  rooms: List<Room>?,relation(name=rooms_membership)
+  dm : List<DirectMessage>?,relation(name=direct_message)
+  shitlist: List<Post>?,relation
+
+  
+

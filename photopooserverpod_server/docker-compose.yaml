@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: postgres:16.3
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: photopooserverpod
+      POSTGRES_PASSWORD: "4zohyNLAH7wKPSArFNl60UfLSR297UkA"
+    volumes:
+      - photopooserverpod_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "O_n_d44CM2efcpQt14zAsUWmOu8bxA8t"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: postgres:16.3
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: photopooserverpod_test
+      POSTGRES_PASSWORD: "0ESYmZvms9EMvfC4vn0YVevOuuMaJOzc"
+    volumes:
+      - photopooserverpod_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "i6xXtFlcpCAv-ofBbx0V2xfvOdPbV4-b"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  photopooserverpod_data:
+  photopooserverpod_test_data:

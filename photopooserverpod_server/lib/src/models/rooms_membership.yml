@@ -1,0 +1,11 @@
+class: Rooms_Membership
+table: rooms_membership
+fields:
+  user: User?,relation(name=rooms_membership)
+  room: Room?,relation(name=rooms_membership)
+indexes:
+  membership_index:
+    fields: userId,roomId
+    unique: true
+
+

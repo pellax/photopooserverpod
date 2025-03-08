@@ -1,0 +1,12 @@
+class: Direct_Message
+table: direct_message
+fields:
+  sender: User?,relation(name=direct_message)
+  receiver: User?,relation(name=direct_message)
+  message: String
+  time: DateTime
+  read: bool
+indexes: 
+  dm_index:
+    fields: senderId,receiverId,time
+    unique: false

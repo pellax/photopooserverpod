@@ -1,0 +1,7 @@
+class: Shitpic
+tables: shitpic
+fields: 
+  pic: ByteData
+  time: DateTime
+  size: int
+
