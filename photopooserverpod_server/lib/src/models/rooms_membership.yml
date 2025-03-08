@@ -1,8 +1,8 @@
-class: Rooms_Membership
+class: RoomsMembership
 table: rooms_membership
 fields:
   user: User?,relation(name=rooms_membership)
-  room: Room?,relation(name=rooms_membership)
+  room: Room?,relation(name=users_membership)
 indexes:
   membership_index:
     fields: userId,roomId

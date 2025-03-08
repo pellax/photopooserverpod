@@ -1,8 +1,8 @@
-class: Direct_Message
+class: DirectMessage
 table: direct_message
 fields:
-  sender: User?,relation(name=direct_message)
-  receiver: User?,relation(name=direct_message)
+  sender: User?,relation(name=sender_message)
+  receiver: User?,relation(name=receiver_message)
   message: String
   time: DateTime
   read: bool

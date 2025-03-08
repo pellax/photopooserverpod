@@ -1,9 +1,9 @@
-class Post
+class: Post
 table: post
 fields:
   user: User?,relation
   time: DateTime
-  shitid: int,relation(parent=shitpic)
+  shitid: int?,relation(parent=shitpic)
   message: String
 indexes:
   shit_unique_id:

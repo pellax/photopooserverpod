@@ -9,8 +9,9 @@ fields:
   phone: String
   age: int
   diet: DietTypeEnum
-  rooms: List<Room>?,relation(name=rooms_membership)
-  dm : List<DirectMessage>?,relation(name=direct_message)
+  rooms: List<RoomsMembership>?,relation(name=rooms_membership)
+  dmto : List<DirectMessage>?,relation(name=sender_message)
+  dmfrom : List<DirectMessage>?,relation(name=receiver_message)
   shitlist: List<Post>?,relation
 
   

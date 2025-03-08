@@ -1,5 +1,5 @@
 class: Shitpic
-tables: shitpic
+table: shitpic
 fields: 
   pic: ByteData
   time: DateTime

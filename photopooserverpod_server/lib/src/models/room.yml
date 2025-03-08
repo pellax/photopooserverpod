@@ -4,4 +4,4 @@ fields:
   name: String
   description: String
   city: String
-  users: List<User>?,relation(name=rooms_membership)
+  users: List<RoomsMembership>?,relation(name=users_membership)
