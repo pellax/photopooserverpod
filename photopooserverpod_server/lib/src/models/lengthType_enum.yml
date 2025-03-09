@@ -1,0 +1,6 @@
+enum: TypeLengthEnum
+serialized: byName
+values:
+  - short
+  - long
+  - bold

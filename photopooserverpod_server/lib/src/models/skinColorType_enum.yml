@@ -1,0 +1,8 @@
+enum: SkinColorTypeEnum
+serialized: byName
+values:
+  - caucasian
+  - black
+  - asian
+  - hispanic
+

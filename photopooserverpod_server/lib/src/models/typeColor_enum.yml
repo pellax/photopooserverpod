@@ -1,0 +1,6 @@
+enum: ColorTypeEnum
+serialized: byName
+values:
+  - RED
+  - GREEN
+  - BLUE

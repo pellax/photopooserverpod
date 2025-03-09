@@ -1,0 +1,11 @@
+class: Message
+table: message
+fields:
+  owner: User?, relation(name=user_message)
+  room: Room?, relation(name=room_message)
+  message: String
+
+
+
+
+

@@ -5,3 +5,4 @@ fields:
   description: String
   city: String
   users: List<RoomsMembership>?,relation(name=users_membership)
+  messages: List<Message>?,relation(name=room_message)

@@ -1,0 +1,9 @@
+class: Hair
+table: hair
+fields:
+  color: ColorTypeEnum
+  length: TypeLengthEnum
+  style: TypeStyleEnum
+  image: ByteData
+  look: List<Look>?,relation(name=hair_look)
+  

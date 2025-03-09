@@ -1,0 +1,7 @@
+class: Dress
+table: dress
+fields:
+  image: ByteData
+  color: ColorTypeEnum
+  hexColor: String
+  look: List<Look>?,relation(name=dress_look)

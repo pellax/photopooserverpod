@@ -9,4 +9,4 @@ fields:
 indexes: 
   dm_index:
     fields: senderId,receiverId,time
-    unique: false
+    unique: true

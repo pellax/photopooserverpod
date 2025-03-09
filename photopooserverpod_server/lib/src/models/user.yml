@@ -13,6 +13,11 @@ fields:
   dmto : List<DirectMessage>?,relation(name=sender_message)
   dmfrom : List<DirectMessage>?,relation(name=receiver_message)
   shitlist: List<Post>?,relation
+  look: Look?,relation(name=look_user)
+  friends: List<Friends>?,relation(name=user_friend_by_me)
+  friendsBy: List<Friends>?,relation(name=user_friend_by_user)
+  blocked: List<Blocked>?,relation(name=user_blocked_by_me)
+  blockedBy: List<Blocked>?,relation(name=user_blocked_by_user)
+  messages: List<Message>?,relation(name=user_message)
 
-  
 

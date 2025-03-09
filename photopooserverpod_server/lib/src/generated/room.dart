@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'rooms_membership.dart' as _i2;
+import 'message.dart' as _i3;
 
 abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
   Room._({
@@ -19,6 +20,7 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
     required this.description,
     required this.city,
     this.users,
+    this.messages,
   });
 
   factory Room({
@@ -27,6 +29,7 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
     required String description,
     required String city,
     List<_i2.RoomsMembership>? users,
+    List<_i3.Message>? messages,
   }) = _RoomImpl;
 
   factory Room.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,6 +41,9 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
       users: (jsonSerialization['users'] as List?)
           ?.map(
               (e) => _i2.RoomsMembership.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      messages: (jsonSerialization['messages'] as List?)
+          ?.map((e) => _i3.Message.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -57,6 +63,8 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
 
   List<_i2.RoomsMembership>? users;
 
+  List<_i3.Message>? messages;
+
   @override
   _i1.Table get table => t;
 
@@ -69,6 +77,7 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
     String? description,
     String? city,
     List<_i2.RoomsMembership>? users,
+    List<_i3.Message>? messages,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,6 +87,8 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
       'description': description,
       'city': city,
       if (users != null) 'users': users?.toJson(valueToJson: (v) => v.toJson()),
+      if (messages != null)
+        'messages': messages?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -90,11 +101,19 @@ abstract class Room implements _i1.TableRow, _i1.ProtocolSerialization {
       'city': city,
       if (users != null)
         'users': users?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (messages != null)
+        'messages': messages?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
-  static RoomInclude include({_i2.RoomsMembershipIncludeList? users}) {
-    return RoomInclude._(users: users);
+  static RoomInclude include({
+    _i2.RoomsMembershipIncludeList? users,
+    _i3.MessageIncludeList? messages,
+  }) {
+    return RoomInclude._(
+      users: users,
+      messages: messages,
+    );
   }
 
   static RoomIncludeList includeList({
@@ -132,12 +151,14 @@ class _RoomImpl extends Room {
     required String description,
     required String city,
     List<_i2.RoomsMembership>? users,
+    List<_i3.Message>? messages,
   }) : super._(
           id: id,
           name: name,
           description: description,
           city: city,
           users: users,
+          messages: messages,
         );
 
   /// Returns a shallow copy of this [Room]
@@ -150,6 +171,7 @@ class _RoomImpl extends Room {
     String? description,
     String? city,
     Object? users = _Undefined,
+    Object? messages = _Undefined,
   }) {
     return Room(
       id: id is int? ? id : this.id,
@@ -159,6 +181,9 @@ class _RoomImpl extends Room {
       users: users is List<_i2.RoomsMembership>?
           ? users
           : this.users?.map((e0) => e0.copyWith()).toList(),
+      messages: messages is List<_i3.Message>?
+          ? messages
+          : this.messages?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -189,6 +214,10 @@ class RoomTable extends _i1.Table {
 
   _i1.ManyRelation<_i2.RoomsMembershipTable>? _users;
 
+  _i3.MessageTable? ___messages;
+
+  _i1.ManyRelation<_i3.MessageTable>? _messages;
+
   _i2.RoomsMembershipTable get __users {
     if (___users != null) return ___users!;
     ___users = _i1.createRelationTable(
@@ -200,6 +229,19 @@ class RoomTable extends _i1.Table {
           _i2.RoomsMembershipTable(tableRelation: foreignTableRelation),
     );
     return ___users!;
+  }
+
+  _i3.MessageTable get __messages {
+    if (___messages != null) return ___messages!;
+    ___messages = _i1.createRelationTable(
+      relationFieldName: '__messages',
+      field: Room.t.id,
+      foreignField: _i3.Message.t.roomId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i3.MessageTable(tableRelation: foreignTableRelation),
+    );
+    return ___messages!;
   }
 
   _i1.ManyRelation<_i2.RoomsMembershipTable> get users {
@@ -220,6 +262,24 @@ class RoomTable extends _i1.Table {
     return _users!;
   }
 
+  _i1.ManyRelation<_i3.MessageTable> get messages {
+    if (_messages != null) return _messages!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'messages',
+      field: Room.t.id,
+      foreignField: _i3.Message.t.roomId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i3.MessageTable(tableRelation: foreignTableRelation),
+    );
+    _messages = _i1.ManyRelation<_i3.MessageTable>(
+      tableWithRelations: relationTable,
+      table: _i3.MessageTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _messages!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -233,19 +293,31 @@ class RoomTable extends _i1.Table {
     if (relationField == 'users') {
       return __users;
     }
+    if (relationField == 'messages') {
+      return __messages;
+    }
     return null;
   }
 }
 
 class RoomInclude extends _i1.IncludeObject {
-  RoomInclude._({_i2.RoomsMembershipIncludeList? users}) {
+  RoomInclude._({
+    _i2.RoomsMembershipIncludeList? users,
+    _i3.MessageIncludeList? messages,
+  }) {
     _users = users;
+    _messages = messages;
   }
 
   _i2.RoomsMembershipIncludeList? _users;
 
+  _i3.MessageIncludeList? _messages;
+
   @override
-  Map<String, _i1.Include?> get includes => {'users': _users};
+  Map<String, _i1.Include?> get includes => {
+        'users': _users,
+        'messages': _messages,
+      };
 
   @override
   _i1.Table get table => Room.t;
@@ -524,6 +596,29 @@ class RoomAttachRepository {
       transaction: transaction,
     );
   }
+
+  /// Creates a relation between this [Room] and the given [Message]s
+  /// by setting each [Message]'s foreign key `roomId` to refer to this [Room].
+  Future<void> messages(
+    _i1.Session session,
+    Room room,
+    List<_i3.Message> message, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (message.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('message.id');
+    }
+    if (room.id == null) {
+      throw ArgumentError.notNull('room.id');
+    }
+
+    var $message = message.map((e) => e.copyWith(roomId: room.id)).toList();
+    await session.db.update<_i3.Message>(
+      $message,
+      columns: [_i3.Message.t.roomId],
+      transaction: transaction,
+    );
+  }
 }
 
 class RoomAttachRowRepository {
@@ -548,6 +643,29 @@ class RoomAttachRowRepository {
     await session.db.updateRow<_i2.RoomsMembership>(
       $roomsMembership,
       columns: [_i2.RoomsMembership.t.roomId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [Room] and the given [Message]
+  /// by setting the [Message]'s foreign key `roomId` to refer to this [Room].
+  Future<void> messages(
+    _i1.Session session,
+    Room room,
+    _i3.Message message, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (message.id == null) {
+      throw ArgumentError.notNull('message.id');
+    }
+    if (room.id == null) {
+      throw ArgumentError.notNull('room.id');
+    }
+
+    var $message = message.copyWith(roomId: room.id);
+    await session.db.updateRow<_i3.Message>(
+      $message,
+      columns: [_i3.Message.t.roomId],
       transaction: transaction,
     );
   }

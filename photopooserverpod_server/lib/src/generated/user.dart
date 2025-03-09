@@ -14,6 +14,10 @@ import 'dietType_enum.dart' as _i2;
 import 'rooms_membership.dart' as _i3;
 import 'direct_message.dart' as _i4;
 import 'post.dart' as _i5;
+import 'look.dart' as _i6;
+import 'friends.dart' as _i7;
+import 'blocked.dart' as _i8;
+import 'message.dart' as _i9;
 
 /// Holds a user of photopoo
 abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -29,6 +33,13 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     this.dmto,
     this.dmfrom,
     this.shitlist,
+    required this.lookId,
+    this.look,
+    this.friends,
+    this.friendsBy,
+    this.blocked,
+    this.blockedBy,
+    this.messages,
   });
 
   factory User({
@@ -43,6 +54,13 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     List<_i4.DirectMessage>? dmto,
     List<_i4.DirectMessage>? dmfrom,
     List<_i5.Post>? shitlist,
+    required int lookId,
+    _i6.Look? look,
+    List<_i7.Friends>? friends,
+    List<_i7.Friends>? friendsBy,
+    List<_i8.Blocked>? blocked,
+    List<_i8.Blocked>? blockedBy,
+    List<_i9.Message>? messages,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -66,6 +84,26 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
           .toList(),
       shitlist: (jsonSerialization['shitlist'] as List?)
           ?.map((e) => _i5.Post.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      lookId: jsonSerialization['lookId'] as int,
+      look: jsonSerialization['look'] == null
+          ? null
+          : _i6.Look.fromJson(
+              (jsonSerialization['look'] as Map<String, dynamic>)),
+      friends: (jsonSerialization['friends'] as List?)
+          ?.map((e) => _i7.Friends.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      friendsBy: (jsonSerialization['friendsBy'] as List?)
+          ?.map((e) => _i7.Friends.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      blocked: (jsonSerialization['blocked'] as List?)
+          ?.map((e) => _i8.Blocked.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      blockedBy: (jsonSerialization['blockedBy'] as List?)
+          ?.map((e) => _i8.Blocked.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      messages: (jsonSerialization['messages'] as List?)
+          ?.map((e) => _i9.Message.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -98,6 +136,20 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
 
   List<_i5.Post>? shitlist;
 
+  int lookId;
+
+  _i6.Look? look;
+
+  List<_i7.Friends>? friends;
+
+  List<_i7.Friends>? friendsBy;
+
+  List<_i8.Blocked>? blocked;
+
+  List<_i8.Blocked>? blockedBy;
+
+  List<_i9.Message>? messages;
+
   @override
   _i1.Table get table => t;
 
@@ -116,6 +168,13 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     List<_i4.DirectMessage>? dmto,
     List<_i4.DirectMessage>? dmfrom,
     List<_i5.Post>? shitlist,
+    int? lookId,
+    _i6.Look? look,
+    List<_i7.Friends>? friends,
+    List<_i7.Friends>? friendsBy,
+    List<_i8.Blocked>? blocked,
+    List<_i8.Blocked>? blockedBy,
+    List<_i9.Message>? messages,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -133,6 +192,18 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
         'dmfrom': dmfrom?.toJson(valueToJson: (v) => v.toJson()),
       if (shitlist != null)
         'shitlist': shitlist?.toJson(valueToJson: (v) => v.toJson()),
+      'lookId': lookId,
+      if (look != null) 'look': look?.toJson(),
+      if (friends != null)
+        'friends': friends?.toJson(valueToJson: (v) => v.toJson()),
+      if (friendsBy != null)
+        'friendsBy': friendsBy?.toJson(valueToJson: (v) => v.toJson()),
+      if (blocked != null)
+        'blocked': blocked?.toJson(valueToJson: (v) => v.toJson()),
+      if (blockedBy != null)
+        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
+      if (messages != null)
+        'messages': messages?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -154,6 +225,20 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
         'dmfrom': dmfrom?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (shitlist != null)
         'shitlist': shitlist?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'lookId': lookId,
+      if (look != null) 'look': look?.toJsonForProtocol(),
+      if (friends != null)
+        'friends': friends?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (friendsBy != null)
+        'friendsBy':
+            friendsBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (blocked != null)
+        'blocked': blocked?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (blockedBy != null)
+        'blockedBy':
+            blockedBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (messages != null)
+        'messages': messages?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -162,12 +247,24 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     _i4.DirectMessageIncludeList? dmto,
     _i4.DirectMessageIncludeList? dmfrom,
     _i5.PostIncludeList? shitlist,
+    _i6.LookInclude? look,
+    _i7.FriendsIncludeList? friends,
+    _i7.FriendsIncludeList? friendsBy,
+    _i8.BlockedIncludeList? blocked,
+    _i8.BlockedIncludeList? blockedBy,
+    _i9.MessageIncludeList? messages,
   }) {
     return UserInclude._(
       rooms: rooms,
       dmto: dmto,
       dmfrom: dmfrom,
       shitlist: shitlist,
+      look: look,
+      friends: friends,
+      friendsBy: friendsBy,
+      blocked: blocked,
+      blockedBy: blockedBy,
+      messages: messages,
     );
   }
 
@@ -212,6 +309,13 @@ class _UserImpl extends User {
     List<_i4.DirectMessage>? dmto,
     List<_i4.DirectMessage>? dmfrom,
     List<_i5.Post>? shitlist,
+    required int lookId,
+    _i6.Look? look,
+    List<_i7.Friends>? friends,
+    List<_i7.Friends>? friendsBy,
+    List<_i8.Blocked>? blocked,
+    List<_i8.Blocked>? blockedBy,
+    List<_i9.Message>? messages,
   }) : super._(
           id: id,
           username: username,
@@ -224,6 +328,13 @@ class _UserImpl extends User {
           dmto: dmto,
           dmfrom: dmfrom,
           shitlist: shitlist,
+          lookId: lookId,
+          look: look,
+          friends: friends,
+          friendsBy: friendsBy,
+          blocked: blocked,
+          blockedBy: blockedBy,
+          messages: messages,
         );
 
   /// Returns a shallow copy of this [User]
@@ -242,6 +353,13 @@ class _UserImpl extends User {
     Object? dmto = _Undefined,
     Object? dmfrom = _Undefined,
     Object? shitlist = _Undefined,
+    int? lookId,
+    Object? look = _Undefined,
+    Object? friends = _Undefined,
+    Object? friendsBy = _Undefined,
+    Object? blocked = _Undefined,
+    Object? blockedBy = _Undefined,
+    Object? messages = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
@@ -263,6 +381,23 @@ class _UserImpl extends User {
       shitlist: shitlist is List<_i5.Post>?
           ? shitlist
           : this.shitlist?.map((e0) => e0.copyWith()).toList(),
+      lookId: lookId ?? this.lookId,
+      look: look is _i6.Look? ? look : this.look?.copyWith(),
+      friends: friends is List<_i7.Friends>?
+          ? friends
+          : this.friends?.map((e0) => e0.copyWith()).toList(),
+      friendsBy: friendsBy is List<_i7.Friends>?
+          ? friendsBy
+          : this.friendsBy?.map((e0) => e0.copyWith()).toList(),
+      blocked: blocked is List<_i8.Blocked>?
+          ? blocked
+          : this.blocked?.map((e0) => e0.copyWith()).toList(),
+      blockedBy: blockedBy is List<_i8.Blocked>?
+          ? blockedBy
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
+      messages: messages is List<_i9.Message>?
+          ? messages
+          : this.messages?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -294,6 +429,10 @@ class UserTable extends _i1.Table {
       this,
       _i1.EnumSerialization.byName,
     );
+    lookId = _i1.ColumnInt(
+      'lookId',
+      this,
+    );
   }
 
   /// The contents of the user
@@ -324,6 +463,30 @@ class UserTable extends _i1.Table {
   _i5.PostTable? ___shitlist;
 
   _i1.ManyRelation<_i5.PostTable>? _shitlist;
+
+  late final _i1.ColumnInt lookId;
+
+  _i6.LookTable? _look;
+
+  _i7.FriendsTable? ___friends;
+
+  _i1.ManyRelation<_i7.FriendsTable>? _friends;
+
+  _i7.FriendsTable? ___friendsBy;
+
+  _i1.ManyRelation<_i7.FriendsTable>? _friendsBy;
+
+  _i8.BlockedTable? ___blocked;
+
+  _i1.ManyRelation<_i8.BlockedTable>? _blocked;
+
+  _i8.BlockedTable? ___blockedBy;
+
+  _i1.ManyRelation<_i8.BlockedTable>? _blockedBy;
+
+  _i9.MessageTable? ___messages;
+
+  _i1.ManyRelation<_i9.MessageTable>? _messages;
 
   _i3.RoomsMembershipTable get __rooms {
     if (___rooms != null) return ___rooms!;
@@ -375,6 +538,84 @@ class UserTable extends _i1.Table {
           _i5.PostTable(tableRelation: foreignTableRelation),
     );
     return ___shitlist!;
+  }
+
+  _i6.LookTable get look {
+    if (_look != null) return _look!;
+    _look = _i1.createRelationTable(
+      relationFieldName: 'look',
+      field: User.t.lookId,
+      foreignField: _i6.Look.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i6.LookTable(tableRelation: foreignTableRelation),
+    );
+    return _look!;
+  }
+
+  _i7.FriendsTable get __friends {
+    if (___friends != null) return ___friends!;
+    ___friends = _i1.createRelationTable(
+      relationFieldName: '__friends',
+      field: User.t.id,
+      foreignField: _i7.Friends.t.friendsId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i7.FriendsTable(tableRelation: foreignTableRelation),
+    );
+    return ___friends!;
+  }
+
+  _i7.FriendsTable get __friendsBy {
+    if (___friendsBy != null) return ___friendsBy!;
+    ___friendsBy = _i1.createRelationTable(
+      relationFieldName: '__friendsBy',
+      field: User.t.id,
+      foreignField: _i7.Friends.t.friendsById,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i7.FriendsTable(tableRelation: foreignTableRelation),
+    );
+    return ___friendsBy!;
+  }
+
+  _i8.BlockedTable get __blocked {
+    if (___blocked != null) return ___blocked!;
+    ___blocked = _i1.createRelationTable(
+      relationFieldName: '__blocked',
+      field: User.t.id,
+      foreignField: _i8.Blocked.t.blockedId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i8.BlockedTable(tableRelation: foreignTableRelation),
+    );
+    return ___blocked!;
+  }
+
+  _i8.BlockedTable get __blockedBy {
+    if (___blockedBy != null) return ___blockedBy!;
+    ___blockedBy = _i1.createRelationTable(
+      relationFieldName: '__blockedBy',
+      field: User.t.id,
+      foreignField: _i8.Blocked.t.blockedById,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i8.BlockedTable(tableRelation: foreignTableRelation),
+    );
+    return ___blockedBy!;
+  }
+
+  _i9.MessageTable get __messages {
+    if (___messages != null) return ___messages!;
+    ___messages = _i1.createRelationTable(
+      relationFieldName: '__messages',
+      field: User.t.id,
+      foreignField: _i9.Message.t.ownerId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i9.MessageTable(tableRelation: foreignTableRelation),
+    );
+    return ___messages!;
   }
 
   _i1.ManyRelation<_i3.RoomsMembershipTable> get rooms {
@@ -449,6 +690,96 @@ class UserTable extends _i1.Table {
     return _shitlist!;
   }
 
+  _i1.ManyRelation<_i7.FriendsTable> get friends {
+    if (_friends != null) return _friends!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'friends',
+      field: User.t.id,
+      foreignField: _i7.Friends.t.friendsId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i7.FriendsTable(tableRelation: foreignTableRelation),
+    );
+    _friends = _i1.ManyRelation<_i7.FriendsTable>(
+      tableWithRelations: relationTable,
+      table: _i7.FriendsTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _friends!;
+  }
+
+  _i1.ManyRelation<_i7.FriendsTable> get friendsBy {
+    if (_friendsBy != null) return _friendsBy!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'friendsBy',
+      field: User.t.id,
+      foreignField: _i7.Friends.t.friendsById,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i7.FriendsTable(tableRelation: foreignTableRelation),
+    );
+    _friendsBy = _i1.ManyRelation<_i7.FriendsTable>(
+      tableWithRelations: relationTable,
+      table: _i7.FriendsTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _friendsBy!;
+  }
+
+  _i1.ManyRelation<_i8.BlockedTable> get blocked {
+    if (_blocked != null) return _blocked!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'blocked',
+      field: User.t.id,
+      foreignField: _i8.Blocked.t.blockedId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i8.BlockedTable(tableRelation: foreignTableRelation),
+    );
+    _blocked = _i1.ManyRelation<_i8.BlockedTable>(
+      tableWithRelations: relationTable,
+      table: _i8.BlockedTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _blocked!;
+  }
+
+  _i1.ManyRelation<_i8.BlockedTable> get blockedBy {
+    if (_blockedBy != null) return _blockedBy!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'blockedBy',
+      field: User.t.id,
+      foreignField: _i8.Blocked.t.blockedById,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i8.BlockedTable(tableRelation: foreignTableRelation),
+    );
+    _blockedBy = _i1.ManyRelation<_i8.BlockedTable>(
+      tableWithRelations: relationTable,
+      table: _i8.BlockedTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _blockedBy!;
+  }
+
+  _i1.ManyRelation<_i9.MessageTable> get messages {
+    if (_messages != null) return _messages!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'messages',
+      field: User.t.id,
+      foreignField: _i9.Message.t.ownerId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i9.MessageTable(tableRelation: foreignTableRelation),
+    );
+    _messages = _i1.ManyRelation<_i9.MessageTable>(
+      tableWithRelations: relationTable,
+      table: _i9.MessageTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _messages!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -458,6 +789,7 @@ class UserTable extends _i1.Table {
         phone,
         age,
         diet,
+        lookId,
       ];
 
   @override
@@ -474,6 +806,24 @@ class UserTable extends _i1.Table {
     if (relationField == 'shitlist') {
       return __shitlist;
     }
+    if (relationField == 'look') {
+      return look;
+    }
+    if (relationField == 'friends') {
+      return __friends;
+    }
+    if (relationField == 'friendsBy') {
+      return __friendsBy;
+    }
+    if (relationField == 'blocked') {
+      return __blocked;
+    }
+    if (relationField == 'blockedBy') {
+      return __blockedBy;
+    }
+    if (relationField == 'messages') {
+      return __messages;
+    }
     return null;
   }
 }
@@ -484,11 +834,23 @@ class UserInclude extends _i1.IncludeObject {
     _i4.DirectMessageIncludeList? dmto,
     _i4.DirectMessageIncludeList? dmfrom,
     _i5.PostIncludeList? shitlist,
+    _i6.LookInclude? look,
+    _i7.FriendsIncludeList? friends,
+    _i7.FriendsIncludeList? friendsBy,
+    _i8.BlockedIncludeList? blocked,
+    _i8.BlockedIncludeList? blockedBy,
+    _i9.MessageIncludeList? messages,
   }) {
     _rooms = rooms;
     _dmto = dmto;
     _dmfrom = dmfrom;
     _shitlist = shitlist;
+    _look = look;
+    _friends = friends;
+    _friendsBy = friendsBy;
+    _blocked = blocked;
+    _blockedBy = blockedBy;
+    _messages = messages;
   }
 
   _i3.RoomsMembershipIncludeList? _rooms;
@@ -499,12 +861,30 @@ class UserInclude extends _i1.IncludeObject {
 
   _i5.PostIncludeList? _shitlist;
 
+  _i6.LookInclude? _look;
+
+  _i7.FriendsIncludeList? _friends;
+
+  _i7.FriendsIncludeList? _friendsBy;
+
+  _i8.BlockedIncludeList? _blocked;
+
+  _i8.BlockedIncludeList? _blockedBy;
+
+  _i9.MessageIncludeList? _messages;
+
   @override
   Map<String, _i1.Include?> get includes => {
         'rooms': _rooms,
         'dmto': _dmto,
         'dmfrom': _dmfrom,
         'shitlist': _shitlist,
+        'look': _look,
+        'friends': _friends,
+        'friendsBy': _friendsBy,
+        'blocked': _blocked,
+        'blockedBy': _blockedBy,
+        'messages': _messages,
       };
 
   @override
@@ -860,10 +1240,150 @@ class UserAttachRepository {
       transaction: transaction,
     );
   }
+
+  /// Creates a relation between this [User] and the given [Friends]s
+  /// by setting each [Friends]'s foreign key `friendsId` to refer to this [User].
+  Future<void> friends(
+    _i1.Session session,
+    User user,
+    List<_i7.Friends> friends, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friends.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('friends.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friends = friends.map((e) => e.copyWith(friendsId: user.id)).toList();
+    await session.db.update<_i7.Friends>(
+      $friends,
+      columns: [_i7.Friends.t.friendsId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Friends]s
+  /// by setting each [Friends]'s foreign key `friendsById` to refer to this [User].
+  Future<void> friendsBy(
+    _i1.Session session,
+    User user,
+    List<_i7.Friends> friends, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friends.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('friends.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friends =
+        friends.map((e) => e.copyWith(friendsById: user.id)).toList();
+    await session.db.update<_i7.Friends>(
+      $friends,
+      columns: [_i7.Friends.t.friendsById],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Blocked]s
+  /// by setting each [Blocked]'s foreign key `blockedId` to refer to this [User].
+  Future<void> blocked(
+    _i1.Session session,
+    User user,
+    List<_i8.Blocked> blocked, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocked.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('blocked.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $blocked = blocked.map((e) => e.copyWith(blockedId: user.id)).toList();
+    await session.db.update<_i8.Blocked>(
+      $blocked,
+      columns: [_i8.Blocked.t.blockedId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Blocked]s
+  /// by setting each [Blocked]'s foreign key `blockedById` to refer to this [User].
+  Future<void> blockedBy(
+    _i1.Session session,
+    User user,
+    List<_i8.Blocked> blocked, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocked.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('blocked.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $blocked =
+        blocked.map((e) => e.copyWith(blockedById: user.id)).toList();
+    await session.db.update<_i8.Blocked>(
+      $blocked,
+      columns: [_i8.Blocked.t.blockedById],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Message]s
+  /// by setting each [Message]'s foreign key `ownerId` to refer to this [User].
+  Future<void> messages(
+    _i1.Session session,
+    User user,
+    List<_i9.Message> message, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (message.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('message.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $message = message.map((e) => e.copyWith(ownerId: user.id)).toList();
+    await session.db.update<_i9.Message>(
+      $message,
+      columns: [_i9.Message.t.ownerId],
+      transaction: transaction,
+    );
+  }
 }
 
 class UserAttachRowRepository {
   const UserAttachRowRepository._();
+
+  /// Creates a relation between the given [User] and [Look]
+  /// by setting the [User]'s foreign key `lookId` to refer to the [Look].
+  Future<void> look(
+    _i1.Session session,
+    User user,
+    _i6.Look look, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+    if (look.id == null) {
+      throw ArgumentError.notNull('look.id');
+    }
+
+    var $user = user.copyWith(lookId: look.id);
+    await session.db.updateRow<User>(
+      $user,
+      columns: [User.t.lookId],
+      transaction: transaction,
+    );
+  }
 
   /// Creates a relation between this [User] and the given [RoomsMembership]
   /// by setting the [RoomsMembership]'s foreign key `userId` to refer to this [User].
@@ -956,6 +1476,121 @@ class UserAttachRowRepository {
     await session.db.updateRow<_i5.Post>(
       $post,
       columns: [_i5.Post.t.$_userShitlistUserId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Friends]
+  /// by setting the [Friends]'s foreign key `friendsId` to refer to this [User].
+  Future<void> friends(
+    _i1.Session session,
+    User user,
+    _i7.Friends friends, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friends.id == null) {
+      throw ArgumentError.notNull('friends.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friends = friends.copyWith(friendsId: user.id);
+    await session.db.updateRow<_i7.Friends>(
+      $friends,
+      columns: [_i7.Friends.t.friendsId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Friends]
+  /// by setting the [Friends]'s foreign key `friendsById` to refer to this [User].
+  Future<void> friendsBy(
+    _i1.Session session,
+    User user,
+    _i7.Friends friends, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friends.id == null) {
+      throw ArgumentError.notNull('friends.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friends = friends.copyWith(friendsById: user.id);
+    await session.db.updateRow<_i7.Friends>(
+      $friends,
+      columns: [_i7.Friends.t.friendsById],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Blocked]
+  /// by setting the [Blocked]'s foreign key `blockedId` to refer to this [User].
+  Future<void> blocked(
+    _i1.Session session,
+    User user,
+    _i8.Blocked blocked, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocked.id == null) {
+      throw ArgumentError.notNull('blocked.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $blocked = blocked.copyWith(blockedId: user.id);
+    await session.db.updateRow<_i8.Blocked>(
+      $blocked,
+      columns: [_i8.Blocked.t.blockedId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Blocked]
+  /// by setting the [Blocked]'s foreign key `blockedById` to refer to this [User].
+  Future<void> blockedBy(
+    _i1.Session session,
+    User user,
+    _i8.Blocked blocked, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocked.id == null) {
+      throw ArgumentError.notNull('blocked.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $blocked = blocked.copyWith(blockedById: user.id);
+    await session.db.updateRow<_i8.Blocked>(
+      $blocked,
+      columns: [_i8.Blocked.t.blockedById],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [Message]
+  /// by setting the [Message]'s foreign key `ownerId` to refer to this [User].
+  Future<void> messages(
+    _i1.Session session,
+    User user,
+    _i9.Message message, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (message.id == null) {
+      throw ArgumentError.notNull('message.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $message = message.copyWith(ownerId: user.id);
+    await session.db.updateRow<_i9.Message>(
+      $message,
+      columns: [_i9.Message.t.ownerId],
       transaction: transaction,
     );
   }

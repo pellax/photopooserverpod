@@ -12,4 +12,17 @@ class UsersEndpoint extends Endpoint {
 Future<void> createUser(Session session, User user) async {
   await User.db.insertRow(session, user);
 }
+
+Future<void> deleteUser(Session session, User user) async {
+  await User.db.deleteRow(session, user);
+}
+
+Future<List<User>> getAllUsers(Session session) async {
+  // By ordering by the id column, we always get the notes in the same order
+  // and not in the order they were updated.
+  return await User.db.find(
+    session,
+    orderBy: (t) => t.id,
+  );
+}
 }

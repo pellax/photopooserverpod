@@ -1,0 +1,10 @@
+enum: TypeStyleEnum
+serialized: byName
+values:
+  - straight
+  - curly
+  - wavy
+  - kinky
+  - coily
+  - frizzy
+

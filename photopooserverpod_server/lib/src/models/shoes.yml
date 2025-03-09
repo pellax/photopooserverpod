@@ -1,0 +1,8 @@
+class: Shoes
+table: shoes
+fields:
+  image: ByteData
+  color: ColorTypeEnum
+  look: List<Look>?,relation(name=shoes_look)
+
+

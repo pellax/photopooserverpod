@@ -1,0 +1,6 @@
+class: Skin
+table: skin
+fields:
+  color: SkinColorTypeEnum
+  look: List<Look>?,relation(name=skin_look)
+

@@ -1,0 +1,6 @@
+enum: GenderTypeEnum
+serialized: byName
+values:
+  - Masculine
+  - Feminine
+  - NonBinary

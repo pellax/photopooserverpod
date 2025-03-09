@@ -1,0 +1,10 @@
+class: Friends
+table: friends
+fields:
+  friends: User?, relation(name=user_friend_by_me,onDelete=CASCADE,onUpdate=CASCADE)
+  friendsBy: User?, relation(name=user_friend_by_user,onDelete=CASCADE,onUpdate=CASCADE)
+indexes:
+  friend_friended:
+    fields: friendsId, friendsById
+    unique: true
+    

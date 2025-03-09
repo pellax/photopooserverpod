@@ -1,0 +1,6 @@
+class: Face
+table: face
+fields:
+  image: ByteData
+  look: List<Look>?,relation(name=face_look)
+ 

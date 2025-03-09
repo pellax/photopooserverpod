@@ -1,0 +1,10 @@
+class: Look
+table: look
+fields:
+  user: List<User>?,relation(name=look_user)
+  hair: Hair?,relation(name=hair_look)
+  dress: Dress?,relation(name=dress_look)
+  face: Face?,relation(name=face_look)
+  skin: Skin?,relation(name=skin_look)
+  gender: GenderTypeEnum
+  shoes: Shoes?,relation(name=shoes_look)
