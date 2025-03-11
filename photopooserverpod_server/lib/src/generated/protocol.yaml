@@ -1,5 +1,22 @@
 example:
   - hello:
+friends:
+  - createFriendship:
+  - deleteFriendship:
+  - getAllFriendships:
+posts:
+  - createPost:
+  - deletePost:
+  - getAllPosts:
+  - getPostsByUser:
+rooms:
+  - example:
+  - createRooms:
+  - deleteRoom:
+  - getAllRooms:
 users:
   - example:
   - createUser:
+  - deleteUser:
+  - getAllUsers:
+  - getFriendsbyUser:

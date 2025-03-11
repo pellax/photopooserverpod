@@ -25,4 +25,14 @@ Future<List<User>> getAllUsers(Session session) async {
     orderBy: (t) => t.id,
   );
 }
+Future<List<Friends>> getFriendsbyUser(Session session, User user)async{
+  return await Friends.db.find(
+    session,
+    where: (t) => t.friendsId.equals(user.id),
+    orderBy: (t) => t.id,
+  );
+}
+
+
+
 }

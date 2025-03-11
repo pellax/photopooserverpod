@@ -33,6 +33,10 @@ import 'skinColorType_enum.dart' as _i21;
 import 'typeColor_enum.dart' as _i22;
 import 'typestyle_enum.dart' as _i23;
 import 'user.dart' as _i24;
+import 'package:photopooserverpod_server/src/generated/friends.dart' as _i25;
+import 'package:photopooserverpod_server/src/generated/post.dart' as _i26;
+import 'package:photopooserverpod_server/src/generated/room.dart' as _i27;
+import 'package:photopooserverpod_server/src/generated/user.dart' as _i28;
 export 'blocked.dart';
 export 'dietType_enum.dart';
 export 'direct_message.dart';
@@ -1354,6 +1358,19 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null
           ? (data as List).map((e) => deserialize<_i14.Message>(e)).toList()
           : null) as T;
+    }
+    if (t == List<_i25.Friends>) {
+      return (data as List).map((e) => deserialize<_i25.Friends>(e)).toList()
+          as T;
+    }
+    if (t == List<_i26.Post>) {
+      return (data as List).map((e) => deserialize<_i26.Post>(e)).toList() as T;
+    }
+    if (t == List<_i27.Room>) {
+      return (data as List).map((e) => deserialize<_i27.Room>(e)).toList() as T;
+    }
+    if (t == List<_i28.User>) {
+      return (data as List).map((e) => deserialize<_i28.User>(e)).toList() as T;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);
