@@ -12,12 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/example_endpoint.dart' as _i2;
 import '../endpoints/friends_enpoint.dart' as _i3;
-import '../endpoints/post_endpoint.dart' as _i4;
-import '../endpoints/rooms_enpoint.dart' as _i5;
-import '../endpoints/users_endpoint.dart' as _i6;
-import 'package:photopooserverpod_server/src/generated/user.dart' as _i7;
-import 'package:photopooserverpod_server/src/generated/post.dart' as _i8;
-import 'package:photopooserverpod_server/src/generated/room.dart' as _i9;
+import '../endpoints/friendship_request_endpoint.dart' as _i4;
+import '../endpoints/post_endpoint.dart' as _i5;
+import '../endpoints/rooms_enpoint.dart' as _i6;
+import '../endpoints/users_endpoint.dart' as _i7;
+import 'package:photopooserverpod_server/src/generated/user.dart' as _i8;
+import 'package:photopooserverpod_server/src/generated/friendship_request.dart'
+    as _i9;
+import 'package:photopooserverpod_server/src/generated/post.dart' as _i10;
+import 'package:photopooserverpod_server/src/generated/room.dart' as _i11;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i12;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -35,19 +39,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'friends',
           null,
         ),
-      'posts': _i4.PostsEndpoint()
+      'friendshipRequest': _i4.FriendshipRequestEndpoint()
+        ..initialize(
+          server,
+          'friendshipRequest',
+          null,
+        ),
+      'posts': _i5.PostsEndpoint()
         ..initialize(
           server,
           'posts',
           null,
         ),
-      'rooms': _i5.RoomsEndpoint()
+      'rooms': _i6.RoomsEndpoint()
         ..initialize(
           server,
           'rooms',
           null,
         ),
-      'users': _i6.UsersEndpoint()
+      'users': _i7.UsersEndpoint()
         ..initialize(
           server,
           'users',
@@ -87,12 +97,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'friendsof': _i1.ParameterDescription(
               name: 'friendsof',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             ),
             'friendsby': _i1.ParameterDescription(
               name: 'friendsby',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             ),
           },
@@ -111,12 +121,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'friendof': _i1.ParameterDescription(
               name: 'friendof',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             ),
             'friendsby': _i1.ParameterDescription(
               name: 'friendsby',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             ),
           },
@@ -142,6 +152,72 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['friendshipRequest'] = _i1.EndpointConnector(
+      name: 'friendshipRequest',
+      endpoint: endpoints['friendshipRequest']!,
+      methodConnectors: {
+        'createFriendshipRequest': _i1.MethodConnector(
+          name: 'createFriendshipRequest',
+          params: {
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'friendsof': _i1.ParameterDescription(
+              name: 'friendsof',
+              type: _i1.getType<_i8.User>(),
+              nullable: false,
+            ),
+            'friendsby': _i1.ParameterDescription(
+              name: 'friendsby',
+              type: _i1.getType<_i8.User>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i4.FriendshipRequestEndpoint)
+                  .createFriendshipRequest(
+            session,
+            params['message'],
+            params['friendsof'],
+            params['friendsby'],
+          ),
+        ),
+        'AcceptFriendship': _i1.MethodConnector(
+          name: 'AcceptFriendship',
+          params: {
+            'myfriendship': _i1.ParameterDescription(
+              name: 'myfriendship',
+              type: _i1.getType<_i9.FriendShipRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i4.FriendshipRequestEndpoint)
+                  .AcceptFriendship(
+            session,
+            params['myfriendship'],
+          ),
+        ),
+        'getAllFriendships': _i1.MethodConnector(
+          name: 'getAllFriendships',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i4.FriendshipRequestEndpoint)
+                  .getAllFriendships(session),
+        ),
+      },
+    );
     connectors['posts'] = _i1.EndpointConnector(
       name: 'posts',
       endpoint: endpoints['posts']!,
@@ -151,7 +227,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'post': _i1.ParameterDescription(
               name: 'post',
-              type: _i1.getType<_i8.Post>(),
+              type: _i1.getType<_i10.Post>(),
               nullable: false,
             )
           },
@@ -159,7 +235,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['posts'] as _i4.PostsEndpoint).createPost(
+              (endpoints['posts'] as _i5.PostsEndpoint).createPost(
             session,
             params['post'],
           ),
@@ -169,7 +245,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'post': _i1.ParameterDescription(
               name: 'post',
-              type: _i1.getType<_i8.Post>(),
+              type: _i1.getType<_i10.Post>(),
               nullable: false,
             )
           },
@@ -177,7 +253,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['posts'] as _i4.PostsEndpoint).deletePost(
+              (endpoints['posts'] as _i5.PostsEndpoint).deletePost(
             session,
             params['post'],
           ),
@@ -189,7 +265,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['posts'] as _i4.PostsEndpoint).getAllPosts(session),
+              (endpoints['posts'] as _i5.PostsEndpoint).getAllPosts(session),
         ),
         'getPostsByUser': _i1.MethodConnector(
           name: 'getPostsByUser',
@@ -204,7 +280,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['posts'] as _i4.PostsEndpoint).getPostsByUser(
+              (endpoints['posts'] as _i5.PostsEndpoint).getPostsByUser(
             session,
             params['userId'],
           ),
@@ -222,14 +298,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['rooms'] as _i5.RoomsEndpoint).example(session),
+              (endpoints['rooms'] as _i6.RoomsEndpoint).example(session),
         ),
         'createRooms': _i1.MethodConnector(
           name: 'createRooms',
           params: {
             'room': _i1.ParameterDescription(
               name: 'room',
-              type: _i1.getType<_i9.Room>(),
+              type: _i1.getType<_i11.Room>(),
               nullable: false,
             )
           },
@@ -237,7 +313,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['rooms'] as _i5.RoomsEndpoint).createRooms(
+              (endpoints['rooms'] as _i6.RoomsEndpoint).createRooms(
             session,
             params['room'],
           ),
@@ -247,7 +323,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'room': _i1.ParameterDescription(
               name: 'room',
-              type: _i1.getType<_i9.Room>(),
+              type: _i1.getType<_i11.Room>(),
               nullable: false,
             )
           },
@@ -255,7 +331,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['rooms'] as _i5.RoomsEndpoint).deleteRoom(
+              (endpoints['rooms'] as _i6.RoomsEndpoint).deleteRoom(
             session,
             params['room'],
           ),
@@ -267,7 +343,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['rooms'] as _i5.RoomsEndpoint).getAllRooms(session),
+              (endpoints['rooms'] as _i6.RoomsEndpoint).getAllRooms(session),
         ),
       },
     );
@@ -282,14 +358,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['users'] as _i6.UsersEndpoint).example(session),
+              (endpoints['users'] as _i7.UsersEndpoint).example(session),
         ),
         'createUser': _i1.MethodConnector(
           name: 'createUser',
           params: {
             'user': _i1.ParameterDescription(
               name: 'user',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             )
           },
@@ -297,7 +373,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['users'] as _i6.UsersEndpoint).createUser(
+              (endpoints['users'] as _i7.UsersEndpoint).createUser(
             session,
             params['user'],
           ),
@@ -307,7 +383,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'user': _i1.ParameterDescription(
               name: 'user',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             )
           },
@@ -315,7 +391,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['users'] as _i6.UsersEndpoint).deleteUser(
+              (endpoints['users'] as _i7.UsersEndpoint).deleteUser(
             session,
             params['user'],
           ),
@@ -327,14 +403,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['users'] as _i6.UsersEndpoint).getAllUsers(session),
+              (endpoints['users'] as _i7.UsersEndpoint).getAllUsers(session),
         ),
         'getFriendsbyUser': _i1.MethodConnector(
           name: 'getFriendsbyUser',
           params: {
             'user': _i1.ParameterDescription(
               name: 'user',
-              type: _i1.getType<_i7.User>(),
+              type: _i1.getType<_i8.User>(),
               nullable: false,
             )
           },
@@ -342,12 +418,13 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['users'] as _i6.UsersEndpoint).getFriendsbyUser(
+              (endpoints['users'] as _i7.UsersEndpoint).getFriendsbyUser(
             session,
             params['user'],
           ),
         ),
       },
     );
+    modules['serverpod_auth'] = _i12.Endpoints()..initializeEndpoints(server);
   }
 }

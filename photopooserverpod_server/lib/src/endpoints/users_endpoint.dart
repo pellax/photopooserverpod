@@ -33,6 +33,10 @@ Future<List<Friends>> getFriendsbyUser(Session session, User user)async{
   );
 }
 
-
+Map<String, dynamic> toJson() {
+return {
+    name: 'John Doe',
+};
+}
 
 }

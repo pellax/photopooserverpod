@@ -16,8 +16,10 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:photopooserverpod_server/src/generated/user.dart' as _i4;
 import 'package:photopooserverpod_server/src/generated/friends.dart' as _i5;
-import 'package:photopooserverpod_server/src/generated/post.dart' as _i6;
-import 'package:photopooserverpod_server/src/generated/room.dart' as _i7;
+import 'package:photopooserverpod_server/src/generated/friendship_request.dart'
+    as _i6;
+import 'package:photopooserverpod_server/src/generated/post.dart' as _i7;
+import 'package:photopooserverpod_server/src/generated/room.dart' as _i8;
 import 'package:photopooserverpod_server/src/generated/protocol.dart';
 import 'package:photopooserverpod_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -106,6 +108,8 @@ class TestEndpoints {
 
   late final _FriendsEndpoint friends;
 
+  late final _FriendshipRequestEndpoint friendshipRequest;
+
   late final _PostsEndpoint posts;
 
   late final _RoomsEndpoint rooms;
@@ -125,6 +129,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     friends = _FriendsEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    friendshipRequest = _FriendshipRequestEndpoint(
       endpoints,
       serializationManager,
     );
@@ -287,6 +295,108 @@ class _FriendsEndpoint {
   }
 }
 
+class _FriendshipRequestEndpoint {
+  _FriendshipRequestEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<void> createFriendshipRequest(
+    _i1.TestSessionBuilder sessionBuilder,
+    String message,
+    _i4.User friendsof,
+    _i4.User friendsby,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'createFriendshipRequest',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'createFriendshipRequest',
+          parameters: _i1.testObjectToJson({
+            'message': message,
+            'friendsof': friendsof,
+            'friendsby': friendsby,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> AcceptFriendship(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i6.FriendShipRequest myfriendship,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'AcceptFriendship',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'AcceptFriendship',
+          parameters: _i1.testObjectToJson({'myfriendship': myfriendship}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i5.Friends>> getAllFriendships(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'getAllFriendships',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'getAllFriendships',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i5.Friends>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _PostsEndpoint {
   _PostsEndpoint(
     this._endpointDispatch,
@@ -299,7 +409,7 @@ class _PostsEndpoint {
 
   _i3.Future<void> createPost(
     _i1.TestSessionBuilder sessionBuilder,
-    _i6.Post post,
+    _i7.Post post,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -328,7 +438,7 @@ class _PostsEndpoint {
 
   _i3.Future<void> deletePost(
     _i1.TestSessionBuilder sessionBuilder,
-    _i6.Post post,
+    _i7.Post post,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -355,7 +465,7 @@ class _PostsEndpoint {
     });
   }
 
-  _i3.Future<List<_i6.Post>> getAllPosts(
+  _i3.Future<List<_i7.Post>> getAllPosts(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -374,7 +484,7 @@ class _PostsEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<_i6.Post>>);
+        ) as _i3.Future<List<_i7.Post>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -382,7 +492,7 @@ class _PostsEndpoint {
     });
   }
 
-  _i3.Future<List<_i6.Post>> getPostsByUser(
+  _i3.Future<List<_i7.Post>> getPostsByUser(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -403,7 +513,7 @@ class _PostsEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<_i6.Post>>);
+        ) as _i3.Future<List<_i7.Post>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -450,7 +560,7 @@ class _RoomsEndpoint {
 
   _i3.Future<void> createRooms(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.Room room,
+    _i8.Room room,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -479,7 +589,7 @@ class _RoomsEndpoint {
 
   _i3.Future<void> deleteRoom(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.Room room,
+    _i8.Room room,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -506,7 +616,7 @@ class _RoomsEndpoint {
     });
   }
 
-  _i3.Future<List<_i7.Room>> getAllRooms(
+  _i3.Future<List<_i8.Room>> getAllRooms(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -525,7 +635,7 @@ class _RoomsEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<_i7.Room>>);
+        ) as _i3.Future<List<_i8.Room>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

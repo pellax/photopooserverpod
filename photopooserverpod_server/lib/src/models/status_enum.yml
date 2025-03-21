@@ -1,0 +1,7 @@
+enum: StatusEnum
+serialized: byName
+values:
+  - PENDING
+  - ACCEPTED
+  - REJECTED
+  - BLOCKED

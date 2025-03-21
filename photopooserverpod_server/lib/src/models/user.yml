@@ -19,5 +19,6 @@ fields:
   blocked: List<Blocked>?,relation(name=user_blocked_by_me)
   blockedBy: List<Blocked>?,relation(name=user_blocked_by_user)
   messages: List<Message>?,relation(name=user_message)
-
+  requests: List<FriendShipRequest>?,relation(name=user_request)
+  requestsBy: List<FriendShipRequest>?,relation(name=userby_request)
 

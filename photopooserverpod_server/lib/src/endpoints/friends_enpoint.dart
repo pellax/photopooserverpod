@@ -37,4 +37,9 @@ Future<List<Friends>> getAllFriendships(Session session) async {
     orderBy: (t) => t.id,
   );
 }
+Map<String, dynamic> toJson() {
+return {
+    name: 'John Doe',
+};
+}
 }

@@ -31,5 +31,9 @@ Future<List<Post>> getPostsByUser(Session session, int userId) async {
     orderBy: (t) => t.id,
   );
 }
-
+Map<String, dynamic> toJson() {
+return {
+    name: 'John Doe',
+};
+}
 }

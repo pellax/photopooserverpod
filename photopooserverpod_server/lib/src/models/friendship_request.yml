@@ -1,0 +1,15 @@
+class: FriendShipRequest
+table: friendship_requests
+fields:  
+  friend: User?,relation(name=user_request)
+  friendby: User?,relation(name=userby_request)
+  accept: bool?
+  message: String
+  createdAt: DateTime
+  updatedAt: DateTime 
+  status: StatusEnum
+  
+indexes:
+  request_index_idx:
+    fields: friendId, friendbyId
+    unique: true

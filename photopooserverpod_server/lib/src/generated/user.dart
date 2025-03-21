@@ -18,6 +18,7 @@ import 'look.dart' as _i6;
 import 'friends.dart' as _i7;
 import 'blocked.dart' as _i8;
 import 'message.dart' as _i9;
+import 'friendship_request.dart' as _i10;
 
 /// Holds a user of photopoo
 abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -40,6 +41,8 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     this.blocked,
     this.blockedBy,
     this.messages,
+    this.requests,
+    this.requestsBy,
   });
 
   factory User({
@@ -61,6 +64,8 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     List<_i8.Blocked>? blocked,
     List<_i8.Blocked>? blockedBy,
     List<_i9.Message>? messages,
+    List<_i10.FriendShipRequest>? requests,
+    List<_i10.FriendShipRequest>? requestsBy,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -104,6 +109,14 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
           .toList(),
       messages: (jsonSerialization['messages'] as List?)
           ?.map((e) => _i9.Message.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      requests: (jsonSerialization['requests'] as List?)
+          ?.map((e) =>
+              _i10.FriendShipRequest.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      requestsBy: (jsonSerialization['requestsBy'] as List?)
+          ?.map((e) =>
+              _i10.FriendShipRequest.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -150,6 +163,10 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
 
   List<_i9.Message>? messages;
 
+  List<_i10.FriendShipRequest>? requests;
+
+  List<_i10.FriendShipRequest>? requestsBy;
+
   @override
   _i1.Table get table => t;
 
@@ -175,6 +192,8 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     List<_i8.Blocked>? blocked,
     List<_i8.Blocked>? blockedBy,
     List<_i9.Message>? messages,
+    List<_i10.FriendShipRequest>? requests,
+    List<_i10.FriendShipRequest>? requestsBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -204,6 +223,10 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
         'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
       if (messages != null)
         'messages': messages?.toJson(valueToJson: (v) => v.toJson()),
+      if (requests != null)
+        'requests': requests?.toJson(valueToJson: (v) => v.toJson()),
+      if (requestsBy != null)
+        'requestsBy': requestsBy?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -239,6 +262,11 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
             blockedBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (messages != null)
         'messages': messages?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (requests != null)
+        'requests': requests?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (requestsBy != null)
+        'requestsBy':
+            requestsBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -253,6 +281,8 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
     _i8.BlockedIncludeList? blocked,
     _i8.BlockedIncludeList? blockedBy,
     _i9.MessageIncludeList? messages,
+    _i10.FriendShipRequestIncludeList? requests,
+    _i10.FriendShipRequestIncludeList? requestsBy,
   }) {
     return UserInclude._(
       rooms: rooms,
@@ -265,6 +295,8 @@ abstract class User implements _i1.TableRow, _i1.ProtocolSerialization {
       blocked: blocked,
       blockedBy: blockedBy,
       messages: messages,
+      requests: requests,
+      requestsBy: requestsBy,
     );
   }
 
@@ -316,6 +348,8 @@ class _UserImpl extends User {
     List<_i8.Blocked>? blocked,
     List<_i8.Blocked>? blockedBy,
     List<_i9.Message>? messages,
+    List<_i10.FriendShipRequest>? requests,
+    List<_i10.FriendShipRequest>? requestsBy,
   }) : super._(
           id: id,
           username: username,
@@ -335,6 +369,8 @@ class _UserImpl extends User {
           blocked: blocked,
           blockedBy: blockedBy,
           messages: messages,
+          requests: requests,
+          requestsBy: requestsBy,
         );
 
   /// Returns a shallow copy of this [User]
@@ -360,6 +396,8 @@ class _UserImpl extends User {
     Object? blocked = _Undefined,
     Object? blockedBy = _Undefined,
     Object? messages = _Undefined,
+    Object? requests = _Undefined,
+    Object? requestsBy = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
@@ -398,6 +436,12 @@ class _UserImpl extends User {
       messages: messages is List<_i9.Message>?
           ? messages
           : this.messages?.map((e0) => e0.copyWith()).toList(),
+      requests: requests is List<_i10.FriendShipRequest>?
+          ? requests
+          : this.requests?.map((e0) => e0.copyWith()).toList(),
+      requestsBy: requestsBy is List<_i10.FriendShipRequest>?
+          ? requestsBy
+          : this.requestsBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -487,6 +531,14 @@ class UserTable extends _i1.Table {
   _i9.MessageTable? ___messages;
 
   _i1.ManyRelation<_i9.MessageTable>? _messages;
+
+  _i10.FriendShipRequestTable? ___requests;
+
+  _i1.ManyRelation<_i10.FriendShipRequestTable>? _requests;
+
+  _i10.FriendShipRequestTable? ___requestsBy;
+
+  _i1.ManyRelation<_i10.FriendShipRequestTable>? _requestsBy;
 
   _i3.RoomsMembershipTable get __rooms {
     if (___rooms != null) return ___rooms!;
@@ -616,6 +668,32 @@ class UserTable extends _i1.Table {
           _i9.MessageTable(tableRelation: foreignTableRelation),
     );
     return ___messages!;
+  }
+
+  _i10.FriendShipRequestTable get __requests {
+    if (___requests != null) return ___requests!;
+    ___requests = _i1.createRelationTable(
+      relationFieldName: '__requests',
+      field: User.t.id,
+      foreignField: _i10.FriendShipRequest.t.friendId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i10.FriendShipRequestTable(tableRelation: foreignTableRelation),
+    );
+    return ___requests!;
+  }
+
+  _i10.FriendShipRequestTable get __requestsBy {
+    if (___requestsBy != null) return ___requestsBy!;
+    ___requestsBy = _i1.createRelationTable(
+      relationFieldName: '__requestsBy',
+      field: User.t.id,
+      foreignField: _i10.FriendShipRequest.t.friendbyId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i10.FriendShipRequestTable(tableRelation: foreignTableRelation),
+    );
+    return ___requestsBy!;
   }
 
   _i1.ManyRelation<_i3.RoomsMembershipTable> get rooms {
@@ -780,6 +858,42 @@ class UserTable extends _i1.Table {
     return _messages!;
   }
 
+  _i1.ManyRelation<_i10.FriendShipRequestTable> get requests {
+    if (_requests != null) return _requests!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'requests',
+      field: User.t.id,
+      foreignField: _i10.FriendShipRequest.t.friendId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i10.FriendShipRequestTable(tableRelation: foreignTableRelation),
+    );
+    _requests = _i1.ManyRelation<_i10.FriendShipRequestTable>(
+      tableWithRelations: relationTable,
+      table: _i10.FriendShipRequestTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _requests!;
+  }
+
+  _i1.ManyRelation<_i10.FriendShipRequestTable> get requestsBy {
+    if (_requestsBy != null) return _requestsBy!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'requestsBy',
+      field: User.t.id,
+      foreignField: _i10.FriendShipRequest.t.friendbyId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i10.FriendShipRequestTable(tableRelation: foreignTableRelation),
+    );
+    _requestsBy = _i1.ManyRelation<_i10.FriendShipRequestTable>(
+      tableWithRelations: relationTable,
+      table: _i10.FriendShipRequestTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
+    );
+    return _requestsBy!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -824,6 +938,12 @@ class UserTable extends _i1.Table {
     if (relationField == 'messages') {
       return __messages;
     }
+    if (relationField == 'requests') {
+      return __requests;
+    }
+    if (relationField == 'requestsBy') {
+      return __requestsBy;
+    }
     return null;
   }
 }
@@ -840,6 +960,8 @@ class UserInclude extends _i1.IncludeObject {
     _i8.BlockedIncludeList? blocked,
     _i8.BlockedIncludeList? blockedBy,
     _i9.MessageIncludeList? messages,
+    _i10.FriendShipRequestIncludeList? requests,
+    _i10.FriendShipRequestIncludeList? requestsBy,
   }) {
     _rooms = rooms;
     _dmto = dmto;
@@ -851,6 +973,8 @@ class UserInclude extends _i1.IncludeObject {
     _blocked = blocked;
     _blockedBy = blockedBy;
     _messages = messages;
+    _requests = requests;
+    _requestsBy = requestsBy;
   }
 
   _i3.RoomsMembershipIncludeList? _rooms;
@@ -873,6 +997,10 @@ class UserInclude extends _i1.IncludeObject {
 
   _i9.MessageIncludeList? _messages;
 
+  _i10.FriendShipRequestIncludeList? _requests;
+
+  _i10.FriendShipRequestIncludeList? _requestsBy;
+
   @override
   Map<String, _i1.Include?> get includes => {
         'rooms': _rooms,
@@ -885,6 +1013,8 @@ class UserInclude extends _i1.IncludeObject {
         'blocked': _blocked,
         'blockedBy': _blockedBy,
         'messages': _messages,
+        'requests': _requests,
+        'requestsBy': _requestsBy,
       };
 
   @override
@@ -1357,6 +1487,54 @@ class UserAttachRepository {
       transaction: transaction,
     );
   }
+
+  /// Creates a relation between this [User] and the given [FriendShipRequest]s
+  /// by setting each [FriendShipRequest]'s foreign key `friendId` to refer to this [User].
+  Future<void> requests(
+    _i1.Session session,
+    User user,
+    List<_i10.FriendShipRequest> friendShipRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friendShipRequest.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('friendShipRequest.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friendShipRequest =
+        friendShipRequest.map((e) => e.copyWith(friendId: user.id)).toList();
+    await session.db.update<_i10.FriendShipRequest>(
+      $friendShipRequest,
+      columns: [_i10.FriendShipRequest.t.friendId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [FriendShipRequest]s
+  /// by setting each [FriendShipRequest]'s foreign key `friendbyId` to refer to this [User].
+  Future<void> requestsBy(
+    _i1.Session session,
+    User user,
+    List<_i10.FriendShipRequest> friendShipRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friendShipRequest.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('friendShipRequest.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friendShipRequest =
+        friendShipRequest.map((e) => e.copyWith(friendbyId: user.id)).toList();
+    await session.db.update<_i10.FriendShipRequest>(
+      $friendShipRequest,
+      columns: [_i10.FriendShipRequest.t.friendbyId],
+      transaction: transaction,
+    );
+  }
 }
 
 class UserAttachRowRepository {
@@ -1591,6 +1769,52 @@ class UserAttachRowRepository {
     await session.db.updateRow<_i9.Message>(
       $message,
       columns: [_i9.Message.t.ownerId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [FriendShipRequest]
+  /// by setting the [FriendShipRequest]'s foreign key `friendId` to refer to this [User].
+  Future<void> requests(
+    _i1.Session session,
+    User user,
+    _i10.FriendShipRequest friendShipRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friendShipRequest.id == null) {
+      throw ArgumentError.notNull('friendShipRequest.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friendShipRequest = friendShipRequest.copyWith(friendId: user.id);
+    await session.db.updateRow<_i10.FriendShipRequest>(
+      $friendShipRequest,
+      columns: [_i10.FriendShipRequest.t.friendId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between this [User] and the given [FriendShipRequest]
+  /// by setting the [FriendShipRequest]'s foreign key `friendbyId` to refer to this [User].
+  Future<void> requestsBy(
+    _i1.Session session,
+    User user,
+    _i10.FriendShipRequest friendShipRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (friendShipRequest.id == null) {
+      throw ArgumentError.notNull('friendShipRequest.id');
+    }
+    if (user.id == null) {
+      throw ArgumentError.notNull('user.id');
+    }
+
+    var $friendShipRequest = friendShipRequest.copyWith(friendbyId: user.id);
+    await session.db.updateRow<_i10.FriendShipRequest>(
+      $friendShipRequest,
+      columns: [_i10.FriendShipRequest.t.friendbyId],
       transaction: transaction,
     );
   }

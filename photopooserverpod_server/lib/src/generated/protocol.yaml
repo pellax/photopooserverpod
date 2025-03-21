@@ -4,6 +4,10 @@ friends:
   - createFriendship:
   - deleteFriendship:
   - getAllFriendships:
+friendshipRequest:
+  - createFriendshipRequest:
+  - AcceptFriendship:
+  - getAllFriendships:
 posts:
   - createPost:
   - deletePost:
