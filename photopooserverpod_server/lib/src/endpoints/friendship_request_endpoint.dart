@@ -38,6 +38,29 @@ await FriendShipRequest.db.updateRow(session, acceptFriendship);
   
 }
 
+Future<void> DenyFriendship(Session session,FriendShipRequest myfriendship) async {
+  var rejectedFriendship = await FriendShipRequest.db.findById(session, myfriendship.id??0); 
+rejectedFriendship!.status = StatusEnum.REJECTED;
+rejectedFriendship.updatedAt = DateTime.now();
+await FriendShipRequest.db.updateRow(session, rejectedFriendship);
+
+
+  
+  
+}
+
+Future<void> deleteFriendshipRequest(Session session, FriendShipRequest friends) async {
+  await FriendShipRequest.db.deleteRow(session, friends);
+}
+
+
+
+
+
+  
+  
+
+
 Future<List<Friends>> getAllFriendships(Session session) async {
   // By ordering by the id column, we always get the notes in the same order
   // and not in the order they were updated.

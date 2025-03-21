@@ -150,6 +150,30 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['friends'] as _i3.FriendsEndpoint)
                   .getAllFriendships(session),
         ),
+        'getFriendship': _i1.MethodConnector(
+          name: 'getFriendship',
+          params: {
+            'friendof': _i1.ParameterDescription(
+              name: 'friendof',
+              type: _i1.getType<_i8.User>(),
+              nullable: false,
+            ),
+            'friendby': _i1.ParameterDescription(
+              name: 'friendby',
+              type: _i1.getType<_i8.User>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friends'] as _i3.FriendsEndpoint).getFriendship(
+            session,
+            params['friendof'],
+            params['friendby'],
+          ),
+        ),
       },
     );
     connectors['friendshipRequest'] = _i1.EndpointConnector(
@@ -204,6 +228,44 @@ class Endpoints extends _i1.EndpointDispatch {
                   .AcceptFriendship(
             session,
             params['myfriendship'],
+          ),
+        ),
+        'DenyFriendship': _i1.MethodConnector(
+          name: 'DenyFriendship',
+          params: {
+            'myfriendship': _i1.ParameterDescription(
+              name: 'myfriendship',
+              type: _i1.getType<_i9.FriendShipRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i4.FriendshipRequestEndpoint)
+                  .DenyFriendship(
+            session,
+            params['myfriendship'],
+          ),
+        ),
+        'deleteFriendshipRequest': _i1.MethodConnector(
+          name: 'deleteFriendshipRequest',
+          params: {
+            'friends': _i1.ParameterDescription(
+              name: 'friends',
+              type: _i1.getType<_i9.FriendShipRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i4.FriendshipRequestEndpoint)
+                  .deleteFriendshipRequest(
+            session,
+            params['friends'],
           ),
         ),
         'getAllFriendships': _i1.MethodConnector(

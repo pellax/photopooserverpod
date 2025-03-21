@@ -4,9 +4,12 @@ friends:
   - createFriendship:
   - deleteFriendship:
   - getAllFriendships:
+  - getFriendship:
 friendshipRequest:
   - createFriendshipRequest:
   - AcceptFriendship:
+  - DenyFriendship:
+  - deleteFriendshipRequest:
   - getAllFriendships:
 posts:
   - createPost:

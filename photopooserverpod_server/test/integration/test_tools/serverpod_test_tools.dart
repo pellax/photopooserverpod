@@ -293,6 +293,39 @@ class _FriendsEndpoint {
       }
     });
   }
+
+  _i3.Future<List<_i5.Friends>> getFriendship(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i4.User friendof,
+    _i4.User friendby,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friends',
+        method: 'getFriendship',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friends',
+          methodName: 'getFriendship',
+          parameters: _i1.testObjectToJson({
+            'friendof': friendof,
+            'friendby': friendby,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i5.Friends>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _FriendshipRequestEndpoint {
@@ -356,6 +389,64 @@ class _FriendshipRequestEndpoint {
           endpointPath: 'friendshipRequest',
           methodName: 'AcceptFriendship',
           parameters: _i1.testObjectToJson({'myfriendship': myfriendship}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> DenyFriendship(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i6.FriendShipRequest myfriendship,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'DenyFriendship',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'DenyFriendship',
+          parameters: _i1.testObjectToJson({'myfriendship': myfriendship}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deleteFriendshipRequest(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i6.FriendShipRequest friends,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'deleteFriendshipRequest',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'deleteFriendshipRequest',
+          parameters: _i1.testObjectToJson({'friends': friends}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(

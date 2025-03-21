@@ -37,9 +37,18 @@ Future<List<Friends>> getAllFriendships(Session session) async {
     orderBy: (t) => t.id,
   );
 }
+
+Future<List<Friends>> getFriendship(Session session,User friendof,User friendby) async {
+return await Friends.db.find(
+    session,
+    where: (t) => t.friendsId.equals(friendof.id) & t.friendsById.equals(friendby.id),
+    orderBy: (t) => t.id,
+  );
+
 Map<String, dynamic> toJson() {
 return {
     name: 'John Doe',
 };
+}
 }
 }
