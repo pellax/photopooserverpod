@@ -32,10 +32,15 @@ Future<void> AcceptFriendship(Session session,FriendShipRequest myfriendship) as
 acceptFriendship!.status = StatusEnum.ACCEPTED;
 acceptFriendship.updatedAt = DateTime.now();
 await FriendShipRequest.db.updateRow(session, acceptFriendship);
+await Friends.db.insertRow(session, Friends(
+  friendsById: acceptFriendship.friendbyId,
+  friendsId: acceptFriendship.friendId,
+  friendsBy: acceptFriendship.friendby,
+  friends: acceptFriendship.friend
+ 
+));
 
-
-  
-  
+deleteFriendshipRequest(session, acceptFriendship);
 }
 
 Future<void> DenyFriendship(Session session,FriendShipRequest myfriendship) async {
@@ -44,7 +49,7 @@ rejectedFriendship!.status = StatusEnum.REJECTED;
 rejectedFriendship.updatedAt = DateTime.now();
 await FriendShipRequest.db.updateRow(session, rejectedFriendship);
 
-
+deleteFriendshipRequest(session, rejectedFriendship);
   
   
 }
