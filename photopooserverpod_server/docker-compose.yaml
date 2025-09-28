@@ -1,9 +1,68 @@
 services:
+  # Flutter Web App
+  photopoo-web:
+    build: 
+      context: ../
+      dockerfile: photopooserverpod_flutter/Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - photopooserverpod
+  migrations:
+    image: postgres:16.3
+    command: bash -c "
+      export PGPASSWORD=4zohyNLAH7wKPSArFNl60UfLSR297UkA &&
+      for file in /migrations/*/migration.sql; do
+        echo 'Applying migration:' $$file &&
+        psql -h postgres -U postgres -d photopooserverpod -f $$file;
+      done"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+
+  # Application service
+  photopooserverpod:
+    build: .
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    depends_on:
+      migrations:
+          condition: service_completed_successfully
+      redis:
+          condition: service_started
+      postgres:
+          condition: service_healthy
+      
+    environment:
+      - runmode=development
+      - serverid=default
+      - logging=normal
+      - role=monolith
+      - SERVERPOD_DATABASE_HOST=postgres
+      - SERVERPOD_DATABASE_PORT=5432
+      - SERVERPOD_REDIS_HOST=redis
+      - SERVERPOD_REDIS_PORT=6379
+   
+      
+    volumes:
+      - ./config:/app/config
+      - ./migrations:/app/migrations
+    
+
   # Development services
   postgres:
     image: postgres:16.3
     ports:
       - "8090:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: photopooserverpod

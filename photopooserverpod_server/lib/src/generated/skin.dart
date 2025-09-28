@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'skinColorType_enum.dart' as _i2;
 import 'look.dart' as _i3;
 
-abstract class Skin implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Skin implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Skin._({
     this.id,
     required this.color,
@@ -49,7 +51,7 @@ abstract class Skin implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Look>? look;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Skin]
   /// with some or all fields replaced by the given arguments.
@@ -140,7 +142,7 @@ class _SkinImpl extends Skin {
   }
 }
 
-class SkinTable extends _i1.Table {
+class SkinTable extends _i1.Table<int?> {
   SkinTable({super.tableRelation}) : super(tableName: 'skin') {
     color = _i1.ColumnEnum(
       'color',
@@ -212,7 +214,7 @@ class SkinInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'look': _look};
 
   @override
-  _i1.Table get table => Skin.t;
+  _i1.Table<int?> get table => Skin.t;
 }
 
 class SkinIncludeList extends _i1.IncludeList {
@@ -232,7 +234,7 @@ class SkinIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Skin.t;
+  _i1.Table<int?> get table => Skin.t;
 }
 
 class SkinRepository {

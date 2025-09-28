@@ -1,5 +1,5 @@
 # Build stage
-FROM dart:3.3.0 AS build
+FROM dart:3.9.2 AS build
 WORKDIR /app
 COPY . .
 
@@ -11,7 +11,7 @@ RUN dart compile exe bin/main.dart -o bin/server
 FROM alpine:latest
 
 # Environment variables
-ENV runmode=production
+ENV runmode=docker
 ENV serverid=default
 ENV logging=normal
 ENV role=monolith

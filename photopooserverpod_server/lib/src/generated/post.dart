@@ -8,11 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
+import 'privacy_enum.dart' as _i3;
 
-abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Post._({
     this.id,
     required this.userId,
@@ -20,7 +23,8 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
     required this.time,
     this.shitid,
     required this.message,
-  });
+    required this.privacy,
+  }) : _userShitlistUserId = null;
 
   factory Post({
     int? id,
@@ -29,10 +33,11 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
     required DateTime time,
     int? shitid,
     required String message,
+    required _i3.PrivacyEnum privacy,
   }) = _PostImpl;
 
   factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Post(
+    return PostImplicit._(
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       user: jsonSerialization['user'] == null
@@ -42,6 +47,9 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
       time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       shitid: jsonSerialization['shitid'] as int?,
       message: jsonSerialization['message'] as String,
+      privacy:
+          _i3.PrivacyEnum.fromJson((jsonSerialization['privacy'] as String)),
+      $_userShitlistUserId: jsonSerialization['_userShitlistUserId'] as int?,
     );
   }
 
@@ -62,10 +70,12 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
 
   String message;
 
-  int? _userShitlistUserId;
+  _i3.PrivacyEnum privacy;
+
+  final int? _userShitlistUserId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
@@ -77,6 +87,7 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
     DateTime? time,
     int? shitid,
     String? message,
+    _i3.PrivacyEnum? privacy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,6 +98,7 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
       'time': time.toJson(),
       if (shitid != null) 'shitid': shitid,
       'message': message,
+      'privacy': privacy.toJson(),
       if (_userShitlistUserId != null)
         '_userShitlistUserId': _userShitlistUserId,
     };
@@ -101,6 +113,7 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
       'time': time.toJson(),
       if (shitid != null) 'shitid': shitid,
       'message': message,
+      'privacy': privacy.toJson(),
     };
   }
 
@@ -144,6 +157,7 @@ class _PostImpl extends Post {
     required DateTime time,
     int? shitid,
     required String message,
+    required _i3.PrivacyEnum privacy,
   }) : super._(
           id: id,
           userId: userId,
@@ -151,6 +165,7 @@ class _PostImpl extends Post {
           time: time,
           shitid: shitid,
           message: message,
+          privacy: privacy,
         );
 
   /// Returns a shallow copy of this [Post]
@@ -164,14 +179,17 @@ class _PostImpl extends Post {
     DateTime? time,
     Object? shitid = _Undefined,
     String? message,
+    _i3.PrivacyEnum? privacy,
   }) {
-    return Post(
+    return PostImplicit._(
       id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       user: user is _i2.User? ? user : this.user?.copyWith(),
       time: time ?? this.time,
       shitid: shitid is int? ? shitid : this.shitid,
       message: message ?? this.message,
+      privacy: privacy ?? this.privacy,
+      $_userShitlistUserId: this._userShitlistUserId,
     );
   }
 }
@@ -184,14 +202,17 @@ class PostImplicit extends _PostImpl {
     required DateTime time,
     int? shitid,
     required String message,
-    this.$_userShitlistUserId,
-  }) : super(
+    required _i3.PrivacyEnum privacy,
+    int? $_userShitlistUserId,
+  })  : _userShitlistUserId = $_userShitlistUserId,
+        super(
           id: id,
           userId: userId,
           user: user,
           time: time,
           shitid: shitid,
           message: message,
+          privacy: privacy,
         );
 
   factory PostImplicit(
@@ -205,21 +226,16 @@ class PostImplicit extends _PostImpl {
       time: post.time,
       shitid: post.shitid,
       message: post.message,
+      privacy: post.privacy,
       $_userShitlistUserId: $_userShitlistUserId,
     );
   }
 
-  int? $_userShitlistUserId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'_userShitlistUserId': $_userShitlistUserId});
-    return jsonMap;
-  }
+  final int? _userShitlistUserId;
 }
 
-class PostTable extends _i1.Table {
+class PostTable extends _i1.Table<int?> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
     userId = _i1.ColumnInt(
       'userId',
@@ -237,6 +253,11 @@ class PostTable extends _i1.Table {
       'message',
       this,
     );
+    privacy = _i1.ColumnEnum(
+      'privacy',
+      this,
+      _i1.EnumSerialization.byName,
+    );
     $_userShitlistUserId = _i1.ColumnInt(
       '_userShitlistUserId',
       this,
@@ -252,6 +273,8 @@ class PostTable extends _i1.Table {
   late final _i1.ColumnInt shitid;
 
   late final _i1.ColumnString message;
+
+  late final _i1.ColumnEnum<_i3.PrivacyEnum> privacy;
 
   late final _i1.ColumnInt $_userShitlistUserId;
 
@@ -275,7 +298,18 @@ class PostTable extends _i1.Table {
         time,
         shitid,
         message,
+        privacy,
         $_userShitlistUserId,
+      ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        userId,
+        time,
+        shitid,
+        message,
+        privacy,
       ];
 
   @override
@@ -298,7 +332,7 @@ class PostInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'user': _user};
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int?> get table => Post.t;
 }
 
 class PostIncludeList extends _i1.IncludeList {
@@ -318,7 +352,7 @@ class PostIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int?> get table => Post.t;
 }
 
 class PostRepository {

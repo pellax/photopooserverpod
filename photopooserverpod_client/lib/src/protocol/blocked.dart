@@ -1,0 +1,125 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'user.dart' as _i2;
+
+abstract class Blocked implements _i1.SerializableModel {
+  Blocked._({
+    this.id,
+    required this.blockedId,
+    this.blocked,
+    required this.blockedById,
+    this.blockedBy,
+  });
+
+  factory Blocked({
+    int? id,
+    required int blockedId,
+    _i2.User? blocked,
+    required int blockedById,
+    _i2.User? blockedBy,
+  }) = _BlockedImpl;
+
+  factory Blocked.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Blocked(
+      id: jsonSerialization['id'] as int?,
+      blockedId: jsonSerialization['blockedId'] as int,
+      blocked: jsonSerialization['blocked'] == null
+          ? null
+          : _i2.User.fromJson(
+              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+      blockedById: jsonSerialization['blockedById'] as int,
+      blockedBy: jsonSerialization['blockedBy'] == null
+          ? null
+          : _i2.User.fromJson(
+              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
+    );
+  }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
+  int blockedId;
+
+  _i2.User? blocked;
+
+  int blockedById;
+
+  _i2.User? blockedBy;
+
+  /// Returns a shallow copy of this [Blocked]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  Blocked copyWith({
+    int? id,
+    int? blockedId,
+    _i2.User? blocked,
+    int? blockedById,
+    _i2.User? blockedBy,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'id': id,
+      'blockedId': blockedId,
+      if (blocked != null) 'blocked': blocked?.toJson(),
+      'blockedById': blockedById,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
+    };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _BlockedImpl extends Blocked {
+  _BlockedImpl({
+    int? id,
+    required int blockedId,
+    _i2.User? blocked,
+    required int blockedById,
+    _i2.User? blockedBy,
+  }) : super._(
+          id: id,
+          blockedId: blockedId,
+          blocked: blocked,
+          blockedById: blockedById,
+          blockedBy: blockedBy,
+        );
+
+  /// Returns a shallow copy of this [Blocked]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  Blocked copyWith({
+    Object? id = _Undefined,
+    int? blockedId,
+    Object? blocked = _Undefined,
+    int? blockedById,
+    Object? blockedBy = _Undefined,
+  }) {
+    return Blocked(
+      id: id is int? ? id : this.id,
+      blockedId: blockedId ?? this.blockedId,
+      blocked: blocked is _i2.User? ? blocked : this.blocked?.copyWith(),
+      blockedById: blockedById ?? this.blockedById,
+      blockedBy:
+          blockedBy is _i2.User? ? blockedBy : this.blockedBy?.copyWith(),
+    );
+  }
+}

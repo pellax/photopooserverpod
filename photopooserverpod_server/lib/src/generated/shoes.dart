@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'typeColor_enum.dart' as _i3;
 import 'look.dart' as _i4;
 
-abstract class Shoes implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Shoes implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Shoes._({
     this.id,
     required this.image,
@@ -54,7 +56,7 @@ abstract class Shoes implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i4.Look>? look;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Shoes]
   /// with some or all fields replaced by the given arguments.
@@ -152,7 +154,7 @@ class _ShoesImpl extends Shoes {
   }
 }
 
-class ShoesTable extends _i1.Table {
+class ShoesTable extends _i1.Table<int?> {
   ShoesTable({super.tableRelation}) : super(tableName: 'shoes') {
     image = _i1.ColumnByteData(
       'image',
@@ -231,7 +233,7 @@ class ShoesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'look': _look};
 
   @override
-  _i1.Table get table => Shoes.t;
+  _i1.Table<int?> get table => Shoes.t;
 }
 
 class ShoesIncludeList extends _i1.IncludeList {
@@ -251,7 +253,7 @@ class ShoesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Shoes.t;
+  _i1.Table<int?> get table => Shoes.t;
 }
 
 class ShoesRepository {

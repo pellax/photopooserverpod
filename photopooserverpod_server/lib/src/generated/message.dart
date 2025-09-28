@@ -8,12 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
 import 'room.dart' as _i3;
 
-abstract class Message implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Message
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Message._({
     this.id,
     required this.ownerId,
@@ -67,7 +70,7 @@ abstract class Message implements _i1.TableRow, _i1.ProtocolSerialization {
   String message;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Message]
   /// with some or all fields replaced by the given arguments.
@@ -182,7 +185,7 @@ class _MessageImpl extends Message {
   }
 }
 
-class MessageTable extends _i1.Table {
+class MessageTable extends _i1.Table<int?> {
   MessageTable({super.tableRelation}) : super(tableName: 'message') {
     ownerId = _i1.ColumnInt(
       'ownerId',
@@ -274,7 +277,7 @@ class MessageInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Message.t;
+  _i1.Table<int?> get table => Message.t;
 }
 
 class MessageIncludeList extends _i1.IncludeList {
@@ -294,7 +297,7 @@ class MessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Message.t;
+  _i1.Table<int?> get table => Message.t;
 }
 
 class MessageRepository {

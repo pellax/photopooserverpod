@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'look.dart' as _i3;
 
-abstract class Face implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Face implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Face._({
     this.id,
     required this.image,
@@ -48,7 +50,7 @@ abstract class Face implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Look>? look;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Face]
   /// with some or all fields replaced by the given arguments.
@@ -139,7 +141,7 @@ class _FaceImpl extends Face {
   }
 }
 
-class FaceTable extends _i1.Table {
+class FaceTable extends _i1.Table<int?> {
   FaceTable({super.tableRelation}) : super(tableName: 'face') {
     image = _i1.ColumnByteData(
       'image',
@@ -210,7 +212,7 @@ class FaceInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'look': _look};
 
   @override
-  _i1.Table get table => Face.t;
+  _i1.Table<int?> get table => Face.t;
 }
 
 class FaceIncludeList extends _i1.IncludeList {
@@ -230,7 +232,7 @@ class FaceIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Face.t;
+  _i1.Table<int?> get table => Face.t;
 }
 
 class FaceRepository {

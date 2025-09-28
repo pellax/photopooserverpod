@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'typeColor_enum.dart' as _i3;
 import 'look.dart' as _i4;
 
-abstract class Dress implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Dress implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Dress._({
     this.id,
     required this.image,
@@ -59,7 +61,7 @@ abstract class Dress implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i4.Look>? look;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Dress]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +166,7 @@ class _DressImpl extends Dress {
   }
 }
 
-class DressTable extends _i1.Table {
+class DressTable extends _i1.Table<int?> {
   DressTable({super.tableRelation}) : super(tableName: 'dress') {
     image = _i1.ColumnByteData(
       'image',
@@ -250,7 +252,7 @@ class DressInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'look': _look};
 
   @override
-  _i1.Table get table => Dress.t;
+  _i1.Table<int?> get table => Dress.t;
 }
 
 class DressIncludeList extends _i1.IncludeList {
@@ -270,7 +272,7 @@ class DressIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Dress.t;
+  _i1.Table<int?> get table => Dress.t;
 }
 
 class DressRepository {

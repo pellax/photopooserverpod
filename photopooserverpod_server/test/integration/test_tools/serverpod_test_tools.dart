@@ -80,6 +80,7 @@ void withServerpod(
   _i2.ExperimentalFeatures? experimentalFeatures,
   _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
+  _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
@@ -95,6 +96,7 @@ void withServerpod(
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
       experimentalFeatures: experimentalFeatures,
+      runtimeParametersBuilder: runtimeParametersBuilder,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
@@ -104,6 +106,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final _AuthEndpoint auth;
+
   late final _ExampleEndpoint example;
 
   late final _FriendsEndpoint friends;
@@ -113,6 +117,8 @@ class TestEndpoints {
   late final _PostsEndpoint posts;
 
   late final _RoomsEndpoint rooms;
+
+  late final _SetupEndpoint setup;
 
   late final _UsersEndpoint users;
 }
@@ -124,6 +130,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
+    auth = _AuthEndpoint(
+      endpoints,
+      serializationManager,
+    );
     example = _ExampleEndpoint(
       endpoints,
       serializationManager,
@@ -144,10 +154,126 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    setup = _SetupEndpoint(
+      endpoints,
+      serializationManager,
+    );
     users = _UsersEndpoint(
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _AuthEndpoint {
+  _AuthEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<Map<String, dynamic>?> login(
+    _i1.TestSessionBuilder sessionBuilder,
+    String username,
+    String password,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'auth',
+        method: 'login',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'auth',
+          methodName: 'login',
+          parameters: _i1.testObjectToJson({
+            'username': username,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Map<String, dynamic>?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<String, dynamic>?> register(
+    _i1.TestSessionBuilder sessionBuilder,
+    String username,
+    String password,
+    String email,
+    int age,
+    String diet,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'auth',
+        method: 'register',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'auth',
+          methodName: 'register',
+          parameters: _i1.testObjectToJson({
+            'username': username,
+            'password': password,
+            'email': email,
+            'age': age,
+            'diet': diet,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Map<String, dynamic>?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<String, dynamic>?> validateToken(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'auth',
+        method: 'validateToken',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'auth',
+          methodName: 'validateToken',
+          parameters: _i1.testObjectToJson({'token': token}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Map<String, dynamic>?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 
@@ -727,6 +853,43 @@ class _RoomsEndpoint {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<List<_i8.Room>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _SetupEndpoint {
+  _SetupEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> ping(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'setup',
+        method: 'ping',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'setup',
+          methodName: 'ping',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
