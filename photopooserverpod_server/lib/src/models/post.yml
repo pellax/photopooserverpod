@@ -5,6 +5,7 @@ fields:
   time: DateTime
   shitid: int?,relation(parent=shitpic)
   message: String
+  privacy: PrivacyEnum
 indexes:
   shit_unique_id:
     fields: shitid

@@ -41,6 +41,10 @@ enum TypeStyleEnum implements _i1.SerializableModel {
 
   @override
   String toJson() => name;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   @override
   String toString() => name;
 }

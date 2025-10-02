@@ -1,3 +1,7 @@
+auth:
+  - login:
+  - register:
+  - validateToken:
 example:
   - hello:
 friends:
@@ -21,6 +25,8 @@ rooms:
   - createRooms:
   - deleteRoom:
   - getAllRooms:
+setup:
+  - ping:
 users:
   - example:
   - createUser:

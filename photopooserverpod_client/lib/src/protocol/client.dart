@@ -19,6 +19,56 @@ import 'package:photopooserverpod_client/src/protocol/post.dart' as _i6;
 import 'package:photopooserverpod_client/src/protocol/room.dart' as _i7;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
 import 'protocol.dart' as _i9;
+<<<<<<< HEAD
+=======
+
+/// {@category Endpoint}
+class EndpointAuth extends _i1.EndpointRef {
+  EndpointAuth(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'auth';
+
+  _i2.Future<Map<String, dynamic>?> login(
+    String username,
+    String password,
+  ) =>
+      caller.callServerEndpoint<Map<String, dynamic>?>(
+        'auth',
+        'login',
+        {
+          'username': username,
+          'password': password,
+        },
+      );
+
+  _i2.Future<Map<String, dynamic>?> register(
+    String username,
+    String password,
+    String email,
+    int age,
+    String diet,
+  ) =>
+      caller.callServerEndpoint<Map<String, dynamic>?>(
+        'auth',
+        'register',
+        {
+          'username': username,
+          'password': password,
+          'email': email,
+          'age': age,
+          'diet': diet,
+        },
+      );
+
+  _i2.Future<Map<String, dynamic>?> validateToken(String token) =>
+      caller.callServerEndpoint<Map<String, dynamic>?>(
+        'auth',
+        'validateToken',
+        {'token': token},
+      );
+}
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -208,6 +258,23 @@ class EndpointRooms extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+<<<<<<< HEAD
+=======
+class EndpointSetup extends _i1.EndpointRef {
+  EndpointSetup(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'setup';
+
+  _i2.Future<String> ping() => caller.callServerEndpoint<String>(
+        'setup',
+        'ping',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 class EndpointUsers extends _i1.EndpointRef {
   EndpointUsers(_i1.EndpointCaller caller) : super(caller);
 
@@ -281,14 +348,21 @@ class Client extends _i1.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
+    auth = EndpointAuth(this);
     example = EndpointExample(this);
     friends = EndpointFriends(this);
     friendshipRequest = EndpointFriendshipRequest(this);
     posts = EndpointPosts(this);
     rooms = EndpointRooms(this);
+<<<<<<< HEAD
+=======
+    setup = EndpointSetup(this);
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     users = EndpointUsers(this);
     modules = Modules(this);
   }
+
+  late final EndpointAuth auth;
 
   late final EndpointExample example;
 
@@ -300,17 +374,27 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRooms rooms;
 
+<<<<<<< HEAD
+=======
+  late final EndpointSetup setup;
+
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   late final EndpointUsers users;
 
   late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'auth': auth,
         'example': example,
         'friends': friends,
         'friendshipRequest': friendshipRequest,
         'posts': posts,
         'rooms': rooms,
+<<<<<<< HEAD
+=======
+        'setup': setup,
+>>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
         'users': users,
       };
 

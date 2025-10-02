@@ -11,25 +11,22 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-enum SkinColorTypeEnum implements _i1.SerializableModel {
-  caucasian,
-  black,
-  asian,
-  hispanic;
+enum PrivacyEnum implements _i1.SerializableModel {
+  EVERYONE,
+  FRIENDS,
+  FRIENDS_OF_FRIENDS;
 
-  static SkinColorTypeEnum fromJson(String name) {
+  static PrivacyEnum fromJson(String name) {
     switch (name) {
-      case 'caucasian':
-        return SkinColorTypeEnum.caucasian;
-      case 'black':
-        return SkinColorTypeEnum.black;
-      case 'asian':
-        return SkinColorTypeEnum.asian;
-      case 'hispanic':
-        return SkinColorTypeEnum.hispanic;
+      case 'EVERYONE':
+        return PrivacyEnum.EVERYONE;
+      case 'FRIENDS':
+        return PrivacyEnum.FRIENDS;
+      case 'FRIENDS_OF_FRIENDS':
+        return PrivacyEnum.FRIENDS_OF_FRIENDS;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "SkinColorTypeEnum"');
+            'Value "$name" cannot be converted to "PrivacyEnum"');
     }
   }
 

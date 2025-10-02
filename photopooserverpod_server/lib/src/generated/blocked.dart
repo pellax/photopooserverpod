@@ -8,11 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
 
-abstract class Blocked implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Blocked
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Blocked._({
     this.id,
     required this.blockedId,
@@ -61,7 +64,7 @@ abstract class Blocked implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.User? blockedBy;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Blocked]
   /// with some or all fields replaced by the given arguments.
@@ -170,7 +173,7 @@ class _BlockedImpl extends Blocked {
   }
 }
 
-class BlockedTable extends _i1.Table {
+class BlockedTable extends _i1.Table<int?> {
   BlockedTable({super.tableRelation}) : super(tableName: 'blocked') {
     blockedId = _i1.ColumnInt(
       'blockedId',
@@ -255,7 +258,7 @@ class BlockedInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Blocked.t;
+  _i1.Table<int?> get table => Blocked.t;
 }
 
 class BlockedIncludeList extends _i1.IncludeList {
@@ -275,7 +278,7 @@ class BlockedIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Blocked.t;
+  _i1.Table<int?> get table => Blocked.t;
 }
 
 class BlockedRepository {

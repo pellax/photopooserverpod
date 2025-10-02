@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
 
 abstract class DirectMessage
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DirectMessage._({
     this.id,
     required this.senderId,
@@ -77,7 +79,7 @@ abstract class DirectMessage
   bool read;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DirectMessage]
   /// with some or all fields replaced by the given arguments.
@@ -206,7 +208,7 @@ class _DirectMessageImpl extends DirectMessage {
   }
 }
 
-class DirectMessageTable extends _i1.Table {
+class DirectMessageTable extends _i1.Table<int?> {
   DirectMessageTable({super.tableRelation})
       : super(tableName: 'direct_message') {
     senderId = _i1.ColumnInt(
@@ -313,7 +315,7 @@ class DirectMessageInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => DirectMessage.t;
+  _i1.Table<int?> get table => DirectMessage.t;
 }
 
 class DirectMessageIncludeList extends _i1.IncludeList {
@@ -333,7 +335,7 @@ class DirectMessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DirectMessage.t;
+  _i1.Table<int?> get table => DirectMessage.t;
 }
 
 class DirectMessageRepository {

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
@@ -18,7 +20,7 @@ import 'skin.dart' as _i6;
 import 'genderType_enum.dart' as _i7;
 import 'shoes.dart' as _i8;
 
-abstract class Look implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Look implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Look._({
     this.id,
     this.user,
@@ -119,7 +121,7 @@ abstract class Look implements _i1.TableRow, _i1.ProtocolSerialization {
   _i8.Shoes? shoes;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Look]
   /// with some or all fields replaced by the given arguments.
@@ -294,7 +296,7 @@ class _LookImpl extends Look {
   }
 }
 
-class LookTable extends _i1.Table {
+class LookTable extends _i1.Table<int?> {
   LookTable({super.tableRelation}) : super(tableName: 'look') {
     hairId = _i1.ColumnInt(
       'hairId',
@@ -520,7 +522,7 @@ class LookInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Look.t;
+  _i1.Table<int?> get table => Look.t;
 }
 
 class LookIncludeList extends _i1.IncludeList {
@@ -540,7 +542,7 @@ class LookIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Look.t;
+  _i1.Table<int?> get table => Look.t;
 }
 
 class LookRepository {

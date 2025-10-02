@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user.dart' as _i2;
 import 'room.dart' as _i3;
 
 abstract class RoomsMembership
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   RoomsMembership._({
     this.id,
     required this.userId,
@@ -63,7 +65,7 @@ abstract class RoomsMembership
   _i3.Room? room;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [RoomsMembership]
   /// with some or all fields replaced by the given arguments.
@@ -171,7 +173,7 @@ class _RoomsMembershipImpl extends RoomsMembership {
   }
 }
 
-class RoomsMembershipTable extends _i1.Table {
+class RoomsMembershipTable extends _i1.Table<int?> {
   RoomsMembershipTable({super.tableRelation})
       : super(tableName: 'rooms_membership') {
     userId = _i1.ColumnInt(
@@ -257,7 +259,7 @@ class RoomsMembershipInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => RoomsMembership.t;
+  _i1.Table<int?> get table => RoomsMembership.t;
 }
 
 class RoomsMembershipIncludeList extends _i1.IncludeList {
@@ -277,7 +279,7 @@ class RoomsMembershipIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RoomsMembership.t;
+  _i1.Table<int?> get table => RoomsMembership.t;
 }
 
 class RoomsMembershipRepository {

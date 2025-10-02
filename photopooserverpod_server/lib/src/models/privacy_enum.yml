@@ -1,0 +1,6 @@
+enum: PrivacyEnum
+serialized: byName
+values:
+  - EVERYONE
+  - FRIENDS
+  - FRIENDS_OF_FRIENDS

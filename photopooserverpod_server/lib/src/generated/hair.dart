@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'typeColor_enum.dart' as _i2;
@@ -16,7 +18,7 @@ import 'typestyle_enum.dart' as _i4;
 import 'dart:typed_data' as _i5;
 import 'look.dart' as _i6;
 
-abstract class Hair implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Hair implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Hair._({
     this.id,
     required this.color,
@@ -67,7 +69,7 @@ abstract class Hair implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i6.Look>? look;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Hair]
   /// with some or all fields replaced by the given arguments.
@@ -179,7 +181,7 @@ class _HairImpl extends Hair {
   }
 }
 
-class HairTable extends _i1.Table {
+class HairTable extends _i1.Table<int?> {
   HairTable({super.tableRelation}) : super(tableName: 'hair') {
     color = _i1.ColumnEnum(
       'color',
@@ -274,7 +276,7 @@ class HairInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'look': _look};
 
   @override
-  _i1.Table get table => Hair.t;
+  _i1.Table<int?> get table => Hair.t;
 }
 
 class HairIncludeList extends _i1.IncludeList {
@@ -294,7 +296,7 @@ class HairIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Hair.t;
+  _i1.Table<int?> get table => Hair.t;
 }
 
 class HairRepository {
