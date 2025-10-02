@@ -53,6 +53,13 @@ deleteFriendshipRequest(session, rejectedFriendship);
   
   
 }
+Future<void> BlockFriendship(Session session, FriendShipRequest myfriendship)async{
+  var blockedFriendship = await FriendShipRequest.db.findById(session, myfriendship.id??0);
+  blockedFriendship!.status = StatusEnum.BLOCKED;
+  blockedFriendship.updatedAt = DateTime.now();
+  await FriendShipRequest.db.updateRow(session, blockedFriendship);
+  deleteFriendshipRequest(session, blockedFriendship);
+}
 
 Future<void> deleteFriendshipRequest(Session session, FriendShipRequest friends) async {
   await FriendShipRequest.db.deleteRow(session, friends);
