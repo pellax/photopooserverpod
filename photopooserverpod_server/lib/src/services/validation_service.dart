@@ -9,11 +9,11 @@ class ValidationService {
   /// Validates post content
   Future<void> validatePostContent(String message) async {
     if (message.trim().isEmpty) {
-      throw ValidationException('Post message cannot be empty');
+      throw PostValidationException.emptyMessage();
     }
 
     if (message.length > 500) {
-      throw ValidationException('Post message cannot exceed 500 characters');
+      throw PostValidationException.messageTooLong(message, 500);
     }
   }
 
@@ -21,29 +21,29 @@ class ValidationService {
   Future<void> validatePrivacySetting(String privacy) async {
     const validSettings = ['EVERYONE', 'FRIENDS', 'FRIENDS_OF_FRIENDS'];
     if (!validSettings.contains(privacy)) {
-      throw ValidationException('Invalid privacy setting: $privacy');
+      throw PostValidationException.invalidPrivacy(privacy);
     }
   }
 
   /// Validates a create post request
   void validateCreateRequest(CreatePostRequest request) {
     if (request.message.trim().isEmpty) {
-      throw ValidationException('Post message cannot be empty');
+      throw PostValidationException.emptyMessage();
     }
 
     if (request.message.length > 500) {
-      throw ValidationException('Post message cannot exceed 500 characters');
+      throw PostValidationException.messageTooLong(request.message, 500);
     }
   }
 
   /// Validates an update post request
   void validateUpdateRequest(UpdatePostRequest request) {
     if (request.message.trim().isEmpty) {
-      throw ValidationException('Post message cannot be empty');
+      throw PostValidationException.emptyMessage();
     }
 
     if (request.message.length > 500) {
-      throw ValidationException('Post message cannot exceed 500 characters');
+      throw PostValidationException.messageTooLong(request.message, 500);
     }
   }
 

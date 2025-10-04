@@ -32,7 +32,7 @@ class PostService {
   Future<Post> createPost(Session session, CreatePostRequest request) async {
     // Input validation (delegated to validation service)
     await _validationService.validatePostContent(request.message);
-    await _validationService.validatePrivacySetting(request.privacy);
+    await _validationService.validatePrivacySetting(request.privacy.toString());
 
     // Business logic: Create post entity
     final post = Post(
