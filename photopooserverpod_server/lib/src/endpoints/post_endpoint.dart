@@ -1,6 +1,9 @@
 import 'package:serverpod/server.dart';
 import '../generated/protocol.dart';
 import '../services/post_service.dart';
+import '../services/validation_service.dart';
+import '../services/notification_service.dart';
+import '../repositories/post_repository.dart';
 import '../models/requests/create_post_request.dart';
 import '../models/requests/update_post_request.dart';
 import '../exceptions/post_exceptions.dart';
@@ -18,12 +21,17 @@ import '../exceptions/post_exceptions.dart';
 /// - SRP: Only handles HTTP concerns
 /// - DIP: Depends on PostService abstraction
 class PostsEndpoint extends Endpoint {
-  final PostService _postService;
-  
-  /// Constructor with dependency injection
-  /// 
-  /// In a real implementation, this would be injected by a DI container
-  PostsEndpoint(this._postService);
+  // For now, create services directly to fix compilation
+  // In a real implementation, this would use proper DI
+  PostService get _postService {
+    // This is a simplified implementation for compilation purposes
+    // In production, use proper dependency injection
+    return PostService(
+      DatabasePostRepository(),
+      ValidationService(),
+      NotificationService(),
+    );
+  }
 
   /// Creates a new post
   /// 

@@ -19,8 +19,6 @@ import 'package:photopooserverpod_client/src/protocol/post.dart' as _i6;
 import 'package:photopooserverpod_client/src/protocol/room.dart' as _i7;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
 import 'protocol.dart' as _i9;
-<<<<<<< HEAD
-=======
 
 /// {@category Endpoint}
 class EndpointAuth extends _i1.EndpointRef {
@@ -68,7 +66,6 @@ class EndpointAuth extends _i1.EndpointRef {
         {'token': token},
       );
 }
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -174,6 +171,13 @@ class EndpointFriendshipRequest extends _i1.EndpointRef {
         {'myfriendship': myfriendship},
       );
 
+  _i2.Future<void> BlockFriendship(_i5.FriendShipRequest myfriendship) =>
+      caller.callServerEndpoint<void>(
+        'friendshipRequest',
+        'BlockFriendship',
+        {'myfriendship': myfriendship},
+      );
+
   _i2.Future<void> deleteFriendshipRequest(_i5.FriendShipRequest friends) =>
       caller.callServerEndpoint<void>(
         'friendshipRequest',
@@ -189,6 +193,18 @@ class EndpointFriendshipRequest extends _i1.EndpointRef {
       );
 }
 
+/// Posts API endpoint following clean architecture principles
+///
+/// Responsibilities:
+/// - Handle HTTP requests and responses
+/// - Input validation and deserialization
+/// - Authentication and authorization
+/// - Delegate business logic to service layer
+/// - Handle and format errors appropriately
+///
+/// Follows SOLID principles:
+/// - SRP: Only handles HTTP concerns
+/// - DIP: Depends on PostService abstraction
 /// {@category Endpoint}
 class EndpointPosts extends _i1.EndpointRef {
   EndpointPosts(_i1.EndpointCaller caller) : super(caller);
@@ -196,30 +212,73 @@ class EndpointPosts extends _i1.EndpointRef {
   @override
   String get name => 'posts';
 
-  _i2.Future<void> createPost(_i6.Post post) => caller.callServerEndpoint<void>(
+  /// Creates a new post
+  ///
+  /// Demonstrates clean architecture:
+  /// - Validates input at endpoint level
+  /// - Converts HTTP request to domain request object
+  /// - Delegates business logic to service layer
+  /// - Handles errors appropriately
+  _i2.Future<_i6.Post> createPost(Map<String, dynamic> requestData) =>
+      caller.callServerEndpoint<_i6.Post>(
         'posts',
         'createPost',
-        {'post': post},
+        {'requestData': requestData},
       );
 
-  _i2.Future<void> deletePost(_i6.Post post) => caller.callServerEndpoint<void>(
+  /// Updates an existing post
+  ///
+  /// Demonstrates proper error handling and authorization
+  _i2.Future<_i6.Post> updatePost(Map<String, dynamic> requestData) =>
+      caller.callServerEndpoint<_i6.Post>(
         'posts',
-        'deletePost',
-        {'post': post},
+        'updatePost',
+        {'requestData': requestData},
       );
 
-  _i2.Future<List<_i6.Post>> getAllPosts() =>
-      caller.callServerEndpoint<List<_i6.Post>>(
-        'posts',
-        'getAllPosts',
-        {},
-      );
-
+  /// Gets posts by user with proper privacy filtering
+  ///
+  /// Demonstrates business logic delegation
   _i2.Future<List<_i6.Post>> getPostsByUser(int userId) =>
       caller.callServerEndpoint<List<_i6.Post>>(
         'posts',
         'getPostsByUser',
         {'userId': userId},
+      );
+
+  /// Gets all public posts with pagination
+  ///
+  /// Demonstrates KISS principle - simple, clear implementation
+  _i2.Future<List<_i6.Post>> getPublicPosts({
+    required int limit,
+    required int offset,
+  }) =>
+      caller.callServerEndpoint<List<_i6.Post>>(
+        'posts',
+        'getPublicPosts',
+        {
+          'limit': limit,
+          'offset': offset,
+        },
+      );
+
+  /// Deletes a post with proper authorization
+  _i2.Future<void> deletePost(int postId) => caller.callServerEndpoint<void>(
+        'posts',
+        'deletePost',
+        {'postId': postId},
+      );
+
+  /// Legacy method - kept for backward compatibility
+  ///
+  /// Note: This violates clean architecture principles
+  /// Should be refactored to use the service layer
+  @Deprecated('Use getPublicPosts instead')
+  _i2.Future<List<_i6.Post>> getAllPosts() =>
+      caller.callServerEndpoint<List<_i6.Post>>(
+        'posts',
+        'getAllPosts',
+        {},
       );
 }
 
@@ -258,8 +317,6 @@ class EndpointRooms extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-<<<<<<< HEAD
-=======
 class EndpointSetup extends _i1.EndpointRef {
   EndpointSetup(_i1.EndpointCaller caller) : super(caller);
 
@@ -274,7 +331,6 @@ class EndpointSetup extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 class EndpointUsers extends _i1.EndpointRef {
   EndpointUsers(_i1.EndpointCaller caller) : super(caller);
 
@@ -354,10 +410,7 @@ class Client extends _i1.ServerpodClientShared {
     friendshipRequest = EndpointFriendshipRequest(this);
     posts = EndpointPosts(this);
     rooms = EndpointRooms(this);
-<<<<<<< HEAD
-=======
     setup = EndpointSetup(this);
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     users = EndpointUsers(this);
     modules = Modules(this);
   }
@@ -374,11 +427,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRooms rooms;
 
-<<<<<<< HEAD
-=======
   late final EndpointSetup setup;
 
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   late final EndpointUsers users;
 
   late final Modules modules;
@@ -391,10 +441,7 @@ class Client extends _i1.ServerpodClientShared {
         'friendshipRequest': friendshipRequest,
         'posts': posts,
         'rooms': rooms,
-<<<<<<< HEAD
-=======
         'setup': setup,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
         'users': users,
       };
 

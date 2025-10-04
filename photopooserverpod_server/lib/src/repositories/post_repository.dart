@@ -178,8 +178,8 @@ class CachedPostRepository implements PostRepository {
   const CachedPostRepository(
     this._repository,
     this._cache, {
-    this.cacheDuration = const Duration(minutes: 15),
-  });
+    Duration cacheDuration = const Duration(minutes: 15),
+  }) : _cacheDuration = cacheDuration;
 
   @override
   Future<Post> create(Session session, Post post) async {

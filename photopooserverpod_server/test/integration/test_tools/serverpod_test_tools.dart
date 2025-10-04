@@ -557,6 +557,35 @@ class _FriendshipRequestEndpoint {
     });
   }
 
+  _i3.Future<void> BlockFriendship(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i6.FriendShipRequest myfriendship,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'friendshipRequest',
+        method: 'BlockFriendship',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'friendshipRequest',
+          methodName: 'BlockFriendship',
+          parameters: _i1.testObjectToJson({'myfriendship': myfriendship}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<void> deleteFriendshipRequest(
     _i1.TestSessionBuilder sessionBuilder,
     _i6.FriendShipRequest friends,
@@ -624,9 +653,9 @@ class _PostsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> createPost(
+  _i3.Future<_i7.Post> createPost(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.Post post,
+    Map<String, dynamic> requestData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -639,13 +668,13 @@ class _PostsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'posts',
           methodName: 'createPost',
-          parameters: _i1.testObjectToJson({'post': post}),
+          parameters: _i1.testObjectToJson({'requestData': requestData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<_i7.Post>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -653,55 +682,28 @@ class _PostsEndpoint {
     });
   }
 
-  _i3.Future<void> deletePost(
+  _i3.Future<_i7.Post> updatePost(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.Post post,
+    Map<String, dynamic> requestData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'posts',
-        method: 'deletePost',
+        method: 'updatePost',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'posts',
-          methodName: 'deletePost',
-          parameters: _i1.testObjectToJson({'post': post}),
+          methodName: 'updatePost',
+          parameters: _i1.testObjectToJson({'requestData': requestData}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i3.Future<List<_i7.Post>> getAllPosts(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'posts',
-        method: 'getAllPosts',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'posts',
-          methodName: 'getAllPosts',
-          parameters: _i1.testObjectToJson({}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<List<_i7.Post>>);
+        ) as _i3.Future<_i7.Post>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -738,28 +740,88 @@ class _PostsEndpoint {
     });
   }
 
-  _i3.Future<void> updatePost(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i7.Post post,
-  ) async {
+  _i3.Future<List<_i7.Post>> getPublicPosts(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'posts',
-        method: 'updatePost',
+        method: 'getPublicPosts',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'posts',
-          methodName: 'updatePost',
-          parameters: _i1.testObjectToJson({'post': post}),
+          methodName: 'getPublicPosts',
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i7.Post>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deletePost(
+    _i1.TestSessionBuilder sessionBuilder,
+    int postId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'posts',
+        method: 'deletePost',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'posts',
+          methodName: 'deletePost',
+          parameters: _i1.testObjectToJson({'postId': postId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i7.Post>> getAllPosts(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'posts',
+        method: 'getAllPosts',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'posts',
+          methodName: 'getAllPosts',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i7.Post>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

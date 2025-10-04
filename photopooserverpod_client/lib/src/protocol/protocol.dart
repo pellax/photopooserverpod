@@ -24,23 +24,6 @@ import 'lengthType_enum.dart' as _i12;
 import 'look.dart' as _i13;
 import 'message.dart' as _i14;
 import 'post.dart' as _i15;
-<<<<<<< HEAD
-import 'room.dart' as _i16;
-import 'rooms_membership.dart' as _i17;
-import 'shitpic.dart' as _i18;
-import 'shoes.dart' as _i19;
-import 'skin.dart' as _i20;
-import 'skinColorType_enum.dart' as _i21;
-import 'status_enum.dart' as _i22;
-import 'typeColor_enum.dart' as _i23;
-import 'typestyle_enum.dart' as _i24;
-import 'user.dart' as _i25;
-import 'package:photopooserverpod_client/src/protocol/friends.dart' as _i26;
-import 'package:photopooserverpod_client/src/protocol/post.dart' as _i27;
-import 'package:photopooserverpod_client/src/protocol/room.dart' as _i28;
-import 'package:photopooserverpod_client/src/protocol/user.dart' as _i29;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i30;
-=======
 import 'privacy_enum.dart' as _i16;
 import 'room.dart' as _i17;
 import 'rooms_membership.dart' as _i18;
@@ -57,7 +40,6 @@ import 'package:photopooserverpod_client/src/protocol/post.dart' as _i28;
 import 'package:photopooserverpod_client/src/protocol/room.dart' as _i29;
 import 'package:photopooserverpod_client/src/protocol/user.dart' as _i30;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i31;
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 export 'blocked.dart';
 export 'dietType_enum.dart';
 export 'direct_message.dart';
@@ -72,10 +54,7 @@ export 'lengthType_enum.dart';
 export 'look.dart';
 export 'message.dart';
 export 'post.dart';
-<<<<<<< HEAD
-=======
 export 'privacy_enum.dart';
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 export 'room.dart';
 export 'rooms_membership.dart';
 export 'shitpic.dart';
@@ -143,37 +122,6 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i15.Post) {
       return _i15.Post.fromJson(data) as T;
     }
-<<<<<<< HEAD
-    if (t == _i16.Room) {
-      return _i16.Room.fromJson(data) as T;
-    }
-    if (t == _i17.RoomsMembership) {
-      return _i17.RoomsMembership.fromJson(data) as T;
-    }
-    if (t == _i18.Shitpic) {
-      return _i18.Shitpic.fromJson(data) as T;
-    }
-    if (t == _i19.Shoes) {
-      return _i19.Shoes.fromJson(data) as T;
-    }
-    if (t == _i20.Skin) {
-      return _i20.Skin.fromJson(data) as T;
-    }
-    if (t == _i21.SkinColorTypeEnum) {
-      return _i21.SkinColorTypeEnum.fromJson(data) as T;
-    }
-    if (t == _i22.StatusEnum) {
-      return _i22.StatusEnum.fromJson(data) as T;
-    }
-    if (t == _i23.ColorTypeEnum) {
-      return _i23.ColorTypeEnum.fromJson(data) as T;
-    }
-    if (t == _i24.TypeStyleEnum) {
-      return _i24.TypeStyleEnum.fromJson(data) as T;
-    }
-    if (t == _i25.User) {
-      return _i25.User.fromJson(data) as T;
-=======
     if (t == _i16.PrivacyEnum) {
       return _i16.PrivacyEnum.fromJson(data) as T;
     }
@@ -206,7 +154,6 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i26.User) {
       return _i26.User.fromJson(data) as T;
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     }
     if (t == _i1.getType<_i2.Blocked?>()) {
       return (data != null ? _i2.Blocked.fromJson(data) : null) as T;
@@ -250,37 +197,6 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i15.Post?>()) {
       return (data != null ? _i15.Post.fromJson(data) : null) as T;
     }
-<<<<<<< HEAD
-    if (t == _i1.getType<_i16.Room?>()) {
-      return (data != null ? _i16.Room.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i17.RoomsMembership?>()) {
-      return (data != null ? _i17.RoomsMembership.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.Shitpic?>()) {
-      return (data != null ? _i18.Shitpic.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.Shoes?>()) {
-      return (data != null ? _i19.Shoes.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.Skin?>()) {
-      return (data != null ? _i20.Skin.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.SkinColorTypeEnum?>()) {
-      return (data != null ? _i21.SkinColorTypeEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.StatusEnum?>()) {
-      return (data != null ? _i22.StatusEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i23.ColorTypeEnum?>()) {
-      return (data != null ? _i23.ColorTypeEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i24.TypeStyleEnum?>()) {
-      return (data != null ? _i24.TypeStyleEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.User?>()) {
-      return (data != null ? _i25.User.fromJson(data) : null) as T;
-=======
     if (t == _i1.getType<_i16.PrivacyEnum?>()) {
       return (data != null ? _i16.PrivacyEnum.fromJson(data) : null) as T;
     }
@@ -313,7 +229,6 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i26.User?>()) {
       return (data != null ? _i26.User.fromJson(data) : null) as T;
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     }
     if (t == _i1.getType<List<_i13.Look>?>()) {
       return (data != null
@@ -330,17 +245,6 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i13.Look>(e)).toList()
           : null) as T;
     }
-<<<<<<< HEAD
-    if (t == _i1.getType<List<_i25.User>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i25.User>(e)).toList()
-          : null) as T;
-    }
-    if (t == _i1.getType<List<_i17.RoomsMembership>?>()) {
-      return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i17.RoomsMembership>(e))
-=======
     if (t == _i1.getType<List<_i26.User>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i26.User>(e)).toList()
@@ -350,7 +254,6 @@ class Protocol extends _i1.SerializationManager {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i18.RoomsMembership>(e))
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
               .toList()
           : null) as T;
     }
@@ -369,17 +272,10 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i13.Look>(e)).toList()
           : null) as T;
     }
-<<<<<<< HEAD
-    if (t == _i1.getType<List<_i17.RoomsMembership>?>()) {
-      return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i17.RoomsMembership>(e))
-=======
     if (t == _i1.getType<List<_i18.RoomsMembership>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i18.RoomsMembership>(e))
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
               .toList()
           : null) as T;
     }
@@ -441,23 +337,6 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           : null) as T;
     }
-<<<<<<< HEAD
-    if (t == List<_i26.Friends>) {
-      return (data as List).map((e) => deserialize<_i26.Friends>(e)).toList()
-          as T;
-    }
-    if (t == List<_i27.Post>) {
-      return (data as List).map((e) => deserialize<_i27.Post>(e)).toList() as T;
-    }
-    if (t == List<_i28.Room>) {
-      return (data as List).map((e) => deserialize<_i28.Room>(e)).toList() as T;
-    }
-    if (t == List<_i29.User>) {
-      return (data as List).map((e) => deserialize<_i29.User>(e)).toList() as T;
-    }
-    try {
-      return _i30.Protocol().deserialize<T>(data, t);
-=======
     if (t == _i1.getType<Map<String, dynamic>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
@@ -467,6 +346,10 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<_i27.Friends>) {
       return (data as List).map((e) => deserialize<_i27.Friends>(e)).toList()
           as T;
+    }
+    if (t == Map<String, dynamic>) {
+      return (data as Map).map((k, v) =>
+          MapEntry(deserialize<String>(k), deserialize<dynamic>(v))) as T;
     }
     if (t == List<_i28.Post>) {
       return (data as List).map((e) => deserialize<_i28.Post>(e)).toList() as T;
@@ -479,7 +362,6 @@ class Protocol extends _i1.SerializationManager {
     }
     try {
       return _i31.Protocol().deserialize<T>(data, t);
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -530,39 +412,6 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i15.Post) {
       return 'Post';
     }
-<<<<<<< HEAD
-    if (data is _i16.Room) {
-      return 'Room';
-    }
-    if (data is _i17.RoomsMembership) {
-      return 'RoomsMembership';
-    }
-    if (data is _i18.Shitpic) {
-      return 'Shitpic';
-    }
-    if (data is _i19.Shoes) {
-      return 'Shoes';
-    }
-    if (data is _i20.Skin) {
-      return 'Skin';
-    }
-    if (data is _i21.SkinColorTypeEnum) {
-      return 'SkinColorTypeEnum';
-    }
-    if (data is _i22.StatusEnum) {
-      return 'StatusEnum';
-    }
-    if (data is _i23.ColorTypeEnum) {
-      return 'ColorTypeEnum';
-    }
-    if (data is _i24.TypeStyleEnum) {
-      return 'TypeStyleEnum';
-    }
-    if (data is _i25.User) {
-      return 'User';
-    }
-    className = _i30.Protocol().getClassNameForObject(data);
-=======
     if (data is _i16.PrivacyEnum) {
       return 'PrivacyEnum';
     }
@@ -597,7 +446,6 @@ class Protocol extends _i1.SerializationManager {
       return 'User';
     }
     className = _i31.Protocol().getClassNameForObject(data);
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -652,41 +500,6 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Post') {
       return deserialize<_i15.Post>(data['data']);
     }
-<<<<<<< HEAD
-    if (dataClassName == 'Room') {
-      return deserialize<_i16.Room>(data['data']);
-    }
-    if (dataClassName == 'RoomsMembership') {
-      return deserialize<_i17.RoomsMembership>(data['data']);
-    }
-    if (dataClassName == 'Shitpic') {
-      return deserialize<_i18.Shitpic>(data['data']);
-    }
-    if (dataClassName == 'Shoes') {
-      return deserialize<_i19.Shoes>(data['data']);
-    }
-    if (dataClassName == 'Skin') {
-      return deserialize<_i20.Skin>(data['data']);
-    }
-    if (dataClassName == 'SkinColorTypeEnum') {
-      return deserialize<_i21.SkinColorTypeEnum>(data['data']);
-    }
-    if (dataClassName == 'StatusEnum') {
-      return deserialize<_i22.StatusEnum>(data['data']);
-    }
-    if (dataClassName == 'ColorTypeEnum') {
-      return deserialize<_i23.ColorTypeEnum>(data['data']);
-    }
-    if (dataClassName == 'TypeStyleEnum') {
-      return deserialize<_i24.TypeStyleEnum>(data['data']);
-    }
-    if (dataClassName == 'User') {
-      return deserialize<_i25.User>(data['data']);
-    }
-    if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i30.Protocol().deserializeByClassName(data);
-=======
     if (dataClassName == 'PrivacyEnum') {
       return deserialize<_i16.PrivacyEnum>(data['data']);
     }
@@ -723,7 +536,6 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
       return _i31.Protocol().deserializeByClassName(data);
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     }
     return super.deserializeByClassName(data);
   }

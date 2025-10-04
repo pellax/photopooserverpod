@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import '../generated/post.dart';
-import '../repositories/post_repository.dart';
+import '../generated/privacy_enum.dart';
+import '../repositories/post_repository.dart' as repo;
 import '../models/requests/create_post_request.dart';
 import '../models/requests/update_post_request.dart';
 import '../exceptions/post_exceptions.dart';
@@ -12,7 +13,7 @@ import '../services/notification_service.dart';
 /// Follows Single Responsibility Principle (SRP) - handles only post business logic
 /// Follows Dependency Inversion Principle (DIP) - depends on abstractions, not concretions
 class PostService {
-  final PostRepository _postRepository;
+  final repo.PostRepository _postRepository;
   final ValidationService _validationService;
   final NotificationService _notificationService;
 
@@ -121,7 +122,7 @@ class PostService {
     }
 
     await _postRepository.delete(session, postId);
-    await _notificationService.notifyPostDeleted(session, post);
+    await _notificationService.notifyPostDeleted(post.userId!, postId);
   }
 
   /// Private helper method for privacy filtering
@@ -138,13 +139,14 @@ class PostService {
           return true;
         case PrivacyEnum.FRIENDS:
           // Only show to friends (simplified - would need friendship check)
-          return requestingUserId != null && 
+          return requestingUserId != null &&
                  (requestingUserId == profileUserId || _areFriends(profileUserId, requestingUserId));
         case PrivacyEnum.FRIENDS_OF_FRIENDS:
           // More complex logic for friends of friends
-          return requestingUserId != null && 
+          return requestingUserId != null &&
                  (requestingUserId == profileUserId || _areFriendsOfFriends(profileUserId, requestingUserId));
       }
+      return false; // Default fallback
     }).toList();
   }
 

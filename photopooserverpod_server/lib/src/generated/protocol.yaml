@@ -13,13 +13,16 @@ friendshipRequest:
   - createFriendshipRequest:
   - AcceptFriendship:
   - DenyFriendship:
+  - BlockFriendship:
   - deleteFriendshipRequest:
   - getAllFriendships:
 posts:
   - createPost:
+  - updatePost:
+  - getPostsByUser:
+  - getPublicPosts:
   - deletePost:
   - getAllPosts:
-  - getPostsByUser:
 rooms:
   - example:
   - createRooms:

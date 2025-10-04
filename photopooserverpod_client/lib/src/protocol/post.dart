@@ -11,10 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'user.dart' as _i2;
-<<<<<<< HEAD
-=======
 import 'privacy_enum.dart' as _i3;
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
 
 abstract class Post implements _i1.SerializableModel {
   Post._({
@@ -24,10 +21,7 @@ abstract class Post implements _i1.SerializableModel {
     required this.time,
     this.shitid,
     required this.message,
-<<<<<<< HEAD
-=======
     required this.privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   });
 
   factory Post({
@@ -37,10 +31,7 @@ abstract class Post implements _i1.SerializableModel {
     required DateTime time,
     int? shitid,
     required String message,
-<<<<<<< HEAD
-=======
     required _i3.PrivacyEnum privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   }) = _PostImpl;
 
   factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -54,11 +45,8 @@ abstract class Post implements _i1.SerializableModel {
       time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       shitid: jsonSerialization['shitid'] as int?,
       message: jsonSerialization['message'] as String,
-<<<<<<< HEAD
-=======
       privacy:
           _i3.PrivacyEnum.fromJson((jsonSerialization['privacy'] as String)),
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     );
   }
 
@@ -77,11 +65,8 @@ abstract class Post implements _i1.SerializableModel {
 
   String message;
 
-<<<<<<< HEAD
-=======
   _i3.PrivacyEnum privacy;
 
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -92,10 +77,7 @@ abstract class Post implements _i1.SerializableModel {
     DateTime? time,
     int? shitid,
     String? message,
-<<<<<<< HEAD
-=======
     _i3.PrivacyEnum? privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,10 +88,7 @@ abstract class Post implements _i1.SerializableModel {
       'time': time.toJson(),
       if (shitid != null) 'shitid': shitid,
       'message': message,
-<<<<<<< HEAD
-=======
       'privacy': privacy.toJson(),
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     };
   }
 
@@ -129,10 +108,7 @@ class _PostImpl extends Post {
     required DateTime time,
     int? shitid,
     required String message,
-<<<<<<< HEAD
-=======
     required _i3.PrivacyEnum privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   }) : super._(
           id: id,
           userId: userId,
@@ -140,10 +116,7 @@ class _PostImpl extends Post {
           time: time,
           shitid: shitid,
           message: message,
-<<<<<<< HEAD
-=======
           privacy: privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
         );
 
   /// Returns a shallow copy of this [Post]
@@ -157,10 +130,7 @@ class _PostImpl extends Post {
     DateTime? time,
     Object? shitid = _Undefined,
     String? message,
-<<<<<<< HEAD
-=======
     _i3.PrivacyEnum? privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
   }) {
     return Post(
       id: id is int? ? id : this.id,
@@ -169,10 +139,7 @@ class _PostImpl extends Post {
       time: time ?? this.time,
       shitid: shitid is int? ? shitid : this.shitid,
       message: message ?? this.message,
-<<<<<<< HEAD
-=======
       privacy: privacy ?? this.privacy,
->>>>>>> 57c8224b224950818b9ce43c8ea947fb7c86eff1
     );
   }
 }

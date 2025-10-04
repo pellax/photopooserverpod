@@ -21,9 +21,8 @@ import '../endpoints/users_endpoint.dart' as _i9;
 import 'package:photopooserverpod_server/src/generated/user.dart' as _i10;
 import 'package:photopooserverpod_server/src/generated/friendship_request.dart'
     as _i11;
-import 'package:photopooserverpod_server/src/generated/post.dart' as _i12;
-import 'package:photopooserverpod_server/src/generated/room.dart' as _i13;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i14;
+import 'package:photopooserverpod_server/src/generated/room.dart' as _i12;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -353,6 +352,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['myfriendship'],
           ),
         ),
+        'BlockFriendship': _i1.MethodConnector(
+          name: 'BlockFriendship',
+          params: {
+            'myfriendship': _i1.ParameterDescription(
+              name: 'myfriendship',
+              type: _i1.getType<_i11.FriendShipRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['friendshipRequest'] as _i5.FriendshipRequestEndpoint)
+                  .BlockFriendship(
+            session,
+            params['myfriendship'],
+          ),
+        ),
         'deleteFriendshipRequest': _i1.MethodConnector(
           name: 'deleteFriendshipRequest',
           params: {
@@ -391,9 +409,9 @@ class Endpoints extends _i1.EndpointDispatch {
         'createPost': _i1.MethodConnector(
           name: 'createPost',
           params: {
-            'post': _i1.ParameterDescription(
-              name: 'post',
-              type: _i1.getType<_i12.Post>(),
+            'requestData': _i1.ParameterDescription(
+              name: 'requestData',
+              type: _i1.getType<Map<String, dynamic>>(),
               nullable: false,
             )
           },
@@ -403,15 +421,15 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['posts'] as _i6.PostsEndpoint).createPost(
             session,
-            params['post'],
+            params['requestData'],
           ),
         ),
-        'deletePost': _i1.MethodConnector(
-          name: 'deletePost',
+        'updatePost': _i1.MethodConnector(
+          name: 'updatePost',
           params: {
-            'post': _i1.ParameterDescription(
-              name: 'post',
-              type: _i1.getType<_i12.Post>(),
+            'requestData': _i1.ParameterDescription(
+              name: 'requestData',
+              type: _i1.getType<Map<String, dynamic>>(),
               nullable: false,
             )
           },
@@ -419,19 +437,10 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['posts'] as _i6.PostsEndpoint).deletePost(
+              (endpoints['posts'] as _i6.PostsEndpoint).updatePost(
             session,
-            params['post'],
+            params['requestData'],
           ),
-        ),
-        'getAllPosts': _i1.MethodConnector(
-          name: 'getAllPosts',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['posts'] as _i6.PostsEndpoint).getAllPosts(session),
         ),
         'getPostsByUser': _i1.MethodConnector(
           name: 'getPostsByUser',
@@ -450,6 +459,60 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['userId'],
           ),
+        ),
+        'getPublicPosts': _i1.MethodConnector(
+          name: 'getPublicPosts',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['posts'] as _i6.PostsEndpoint).getPublicPosts(
+            session,
+            limit: params['limit'],
+            offset: params['offset'],
+          ),
+        ),
+        'deletePost': _i1.MethodConnector(
+          name: 'deletePost',
+          params: {
+            'postId': _i1.ParameterDescription(
+              name: 'postId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['posts'] as _i6.PostsEndpoint).deletePost(
+            session,
+            params['postId'],
+          ),
+        ),
+        'getAllPosts': _i1.MethodConnector(
+          name: 'getAllPosts',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['posts'] as _i6.PostsEndpoint)
+                  .
+// ignore: deprecated_member_use_from_same_package
+                  getAllPosts(session),
         ),
       },
     );
@@ -471,7 +534,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'room': _i1.ParameterDescription(
               name: 'room',
-              type: _i1.getType<_i13.Room>(),
+              type: _i1.getType<_i12.Room>(),
               nullable: false,
             )
           },
@@ -489,7 +552,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'room': _i1.ParameterDescription(
               name: 'room',
-              type: _i1.getType<_i13.Room>(),
+              type: _i1.getType<_i12.Room>(),
               nullable: false,
             )
           },
@@ -606,6 +669,6 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth'] = _i14.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
   }
 }
