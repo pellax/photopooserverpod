@@ -1,39 +1,70 @@
-name: Deploy to AWS
+name: Deploy Microservices to AWS
+
 on:
   push:
-    branches: [ deployment-aws-production, deployment-aws-staging ]
+    branches: [ main, develop, deployment-aws-production, deployment-aws-staging ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
     inputs:
-      target:
-        description: 'Target'
+      environment:
+        description: 'Deployment Environment'
         required: true
-        default: 'production'
+        default: 'staging'
         type: choice
         options:
           - 'staging'
           - 'production'
+      services:
+        description: 'Services to deploy (comma-separated or "all")'
+        required: true
+        default: 'all'
+
+env:
+  AWS_REGION: us-west-2
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  ECS_CLUSTER: photopoo-cluster
+
 jobs:
-  deploy:
-    name: Deploy to AWS
+  # Build and push Docker images for microservices
+  build-and-push:
+    name: Build & Push Images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth-service, social-service, posts-service, chat-service, users-service]
+    outputs:
+      auth-service-image: ${{ steps.build-auth.outputs.image }}
+      social-service-image: ${{ steps.build-social.outputs.image }}
+      posts-service-image: ${{ steps.build-posts.outputs.image }}
+      chat-service-image: ${{ steps.build-chat.outputs.image }}
+      users-service-image: ${{ steps.build-users.outputs.image }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@v1.6.5
-        with:
-          sdk: 3.5
+          fetch-depth: 0
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.3.0'
 
       - name: Create passwords file
         working-directory: photopooserverpod_server
@@ -41,9 +72,274 @@ jobs:
         env:
           SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
         run: |
-          pwd
           echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
-          ls config/
+
+      - name: Get Dart packages
+        working-directory: photopooserverpod_server
+        run: dart pub get
+
+      - name: Build, tag, and push image for ${{ matrix.service }}
+        id: build-${{ matrix.service }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          SERVICE: ${{ matrix.service }}
+        run: |
+          cd photopooserverpod_server
+
+          # Create service-specific Dockerfile
+          case "$SERVICE" in
+            auth-service)
+              # Create Dockerfile for Auth service (auth, setup endpoints)
+              cat > Dockerfile.auth << 'EOF'
+          FROM dart:3.9.2 AS build
+          WORKDIR /app
+          COPY . .
+          RUN dart pub get
+          RUN dart compile exe bin/main.dart -o bin/server
+
+          FROM alpine:latest
+          ENV runmode=production
+          ENV serverid=default
+          ENV logging=normal
+          ENV role=microservice
+          ENV services=auth,setup
+          COPY --from=build /runtime/ /
+          COPY --from=build /app/bin/server server
+          COPY --from=build /app/config/ config/
+          COPY --from=build /app/web/ web/
+          COPY --from=build /app/migrations/ migrations/
+          COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+          EXPOSE 8080 8081 8082
+          ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --services=$services --apply-migrations
+          EOF
+              IMAGE_URI=$ECR_REGISTRY/photopoo-auth:$IMAGE_TAG
+              docker buildx build --platform linux/amd64 -f Dockerfile.auth -t $IMAGE_URI . --push
+              ;;
+            social-service)
+              # Create Dockerfile for Social service (friends, friendship requests)
+              cat > Dockerfile.social << 'EOF'
+          FROM dart:3.9.2 AS build
+          WORKDIR /app
+          COPY . .
+          RUN dart pub get
+          RUN dart compile exe bin/main.dart -o bin/server
+
+          FROM alpine:latest
+          ENV runmode=production
+          ENV serverid=default
+          ENV logging=normal
+          ENV role=microservice
+          ENV services=friends,friendshipRequest
+          COPY --from=build /runtime/ /
+          COPY --from=build /app/bin/server server
+          COPY --from=build /app/config/ config/
+          COPY --from=build /app/web/ web/
+          COPY --from=build /app/migrations/ migrations/
+          COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+          EXPOSE 8080 8081 8082
+          ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --services=$services
+          EOF
+              IMAGE_URI=$ECR_REGISTRY/photopoo-social:$IMAGE_TAG
+              docker buildx build --platform linux/amd64 -f Dockerfile.social -t $IMAGE_URI . --push
+              ;;
+            posts-service)
+              # Create Dockerfile for Posts service
+              cat > Dockerfile.posts << 'EOF'
+          FROM dart:3.9.2 AS build
+          WORKDIR /app
+          COPY . .
+          RUN dart pub get
+          RUN dart compile exe bin/main.dart -o bin/server
+
+          FROM alpine:latest
+          ENV runmode=production
+          ENV serverid=default
+          ENV logging=normal
+          ENV role=microservice
+          ENV services=posts
+          COPY --from=build /runtime/ /
+          COPY --from=build /app/bin/server server
+          COPY --from=build /app/config/ config/
+          COPY --from=build /app/web/ web/
+          COPY --from=build /app/migrations/ migrations/
+          COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+          EXPOSE 8080 8081 8082
+          ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --services=$services
+          EOF
+              IMAGE_URI=$ECR_REGISTRY/photopoo-posts:$IMAGE_TAG
+              docker buildx build --platform linux/amd64 -f Dockerfile.posts -t $IMAGE_URI . --push
+              ;;
+            chat-service)
+              # Create Dockerfile for Chat service (rooms)
+              cat > Dockerfile.chat << 'EOF'
+          FROM dart:3.9.2 AS build
+          WORKDIR /app
+          COPY . .
+          RUN dart pub get
+          RUN dart compile exe bin/main.dart -o bin/server
+
+          FROM alpine:latest
+          ENV runmode=production
+          ENV serverid=default
+          ENV logging=normal
+          ENV role=microservice
+          ENV services=rooms
+          COPY --from=build /runtime/ /
+          COPY --from=build /app/bin/server server
+          COPY --from=build /app/config/ config/
+          COPY --from=build /app/web/ web/
+          COPY --from=build /app/migrations/ migrations/
+          COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+          EXPOSE 8080 8081 8082
+          ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --services=$services
+          EOF
+              IMAGE_URI=$ECR_REGISTRY/photopoo-chat:$IMAGE_TAG
+              docker buildx build --platform linux/amd64 -f Dockerfile.chat -t $IMAGE_URI . --push
+              ;;
+            users-service)
+              # Create Dockerfile for Users service
+              cat > Dockerfile.users << 'EOF'
+          FROM dart:3.9.2 AS build
+          WORKDIR /app
+          COPY . .
+          RUN dart pub get
+          RUN dart compile exe bin/main.dart -o bin/server
+
+          FROM alpine:latest
+          ENV runmode=production
+          ENV serverid=default
+          ENV logging=normal
+          ENV role=microservice
+          ENV services=users
+          COPY --from=build /runtime/ /
+          COPY --from=build /app/bin/server server
+          COPY --from=build /app/config/ config/
+          COPY --from=build /app/web/ web/
+          COPY --from=build /app/migrations/ migrations/
+          COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+          EXPOSE 8080 8081 8082
+          ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --services=$services
+          EOF
+              IMAGE_URI=$ECR_REGISTRY/photopoo-users:$IMAGE_TAG
+              docker buildx build --platform linux/amd64 -f Dockerfile.users -t $IMAGE_URI . --push
+              ;;
+          esac
+
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "Built and pushed $IMAGE_URI"
+
+  # Database Migration Job (runs only once, on auth service)
+  migrate-database:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: always() && needs.build-and-push.result == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.3.0'
+
+      - name: Create passwords file
+        working-directory: photopooserverpod_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+
+      - name: Get dependencies
+        working-directory: photopooserverpod_server
+        run: dart pub get
+
+      - name: Run Database Migration
+        working-directory: photopooserverpod_server
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          echo "Running database migrations for $ENVIRONMENT environment"
+          dart bin/main.dart --apply-migrations --mode=production
+
+  # Deploy to ECS Fargate
+  deploy-microservices:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [build-and-push, migrate-database]
+    if: always() && (needs.build-and-push.result == 'success' && (needs.migrate-database.result == 'success' || needs.migrate-database.result == 'skipped'))
+    strategy:
+      matrix:
+        service: [auth-service, social-service, posts-service, chat-service, users-service]
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy ${{ matrix.service }} to ECS
+        env:
+          SERVICE_NAME: ${{ matrix.service }}
+          IMAGE_URI: ${{ needs.build-and-push.outputs[format('{0}-image', matrix.service)] }}
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER-$ENVIRONMENT \
+            --service photopoo-$SERVICE_NAME-$ENVIRONMENT \
+            --force-new-deployment
+
+          # Wait for deployment to complete
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER-$ENVIRONMENT \
+            --services photopoo-$SERVICE_NAME-$ENVIRONMENT
+
+          echo "✅ $SERVICE_NAME deployed successfully to $ENVIRONMENT"
+
+  # Legacy CodeDeploy (fallback for backwards compatibility)
+  legacy-deploy:
+    name: Legacy CodeDeploy (Fallback)
+    runs-on: ubuntu-latest
+    if: failure() && (contains(github.ref, 'deployment-aws-') || github.event.inputs.services == 'legacy')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.3.0'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create passwords file
+        working-directory: photopooserverpod_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
 
       - name: Get Dart packages
         working-directory: photopooserverpod_server
@@ -54,16 +350,13 @@ jobs:
         run: dart compile kernel bin/main.dart
 
       - name: Create CodeDeploy Deployment
-        id: deploy
         env:
           PROJECT_NAME: photopooserverpod
           AWS_NAME: photopooserverpod
           DEPLOYMENT_BUCKET: photopooserverpod-deployment-6793766
-          TARGET: ${{ github.event.inputs.target }}
+          TARGET: ${{ github.event.inputs.environment || 'staging' }}
         run: |
-          # Deploy server to AWS
-          TARGET="${TARGET:=${GITHUB_REF##*-}}"
-          echo "Deploying to target: $TARGET"
+          echo "Deploying to target: $TARGET using CodeDeploy fallback"
           mkdir -p vendor
           cp "${PROJECT_NAME}_server/deploy/aws/scripts/appspec.yml" appspec.yml
           zip -r deployment.zip .
@@ -73,3 +366,69 @@ jobs:
            --deployment-group-name "${AWS_NAME}-${TARGET}-group" \
            --deployment-config-name CodeDeployDefault.OneAtATime \
            --s3-location "bucket=${DEPLOYMENT_BUCKET},key=deployment.zip,bundleType=zip"
+
+  # Health checks and monitoring
+  post-deployment-checks:
+    name: Health Checks
+    runs-on: ubuntu-latest
+    needs: [deploy-microservices]
+    if: always() && needs.deploy-microservices.result == 'success'
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Health Check Services
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+          ALB_DNS: ${{ secrets.ALB_DNS_NAME }}
+        run: |
+          services=("auth" "social" "posts" "chat" "users")
+          echo "🔍 Starting health checks for $ENVIRONMENT environment..."
+
+          for service in "${services[@]}"; do
+            echo "Checking $service service..."
+            for i in {1..5}; do
+              response=$(curl -s -o /dev/null -w "%{http_code}" "https://$ALB_DNS/$service/health" || echo "000")
+              if [[ "$response" == "200" ]]; then
+                echo "✅ $service service is healthy"
+                break
+              else
+                echo "⚠️  $service service check $i/5 failed (HTTP $response)"
+                [[ $i -eq 5 ]] && exit 1
+                sleep 30
+              fi
+            done
+          done
+
+          echo "🎉 All microservices are healthy!"
+
+  # Notification
+  notify:
+    name: Notify Status
+    runs-on: ubuntu-latest
+    needs: [deploy-microservices, post-deployment-checks]
+    if: always()
+
+    steps:
+      - name: Deployment Result
+        env:
+          DEPLOY_STATUS: ${{ needs.deploy-microservices.result }}
+          HEALTH_STATUS: ${{ needs.post-deployment-checks.result }}
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          if [[ "$DEPLOY_STATUS" == "success" && "$HEALTH_STATUS" == "success" ]]; then
+            echo "🎉 PhotoPoo microservices deployed successfully!"
+            echo "Environment: $ENVIRONMENT"
+            echo "Git SHA: ${{ github.sha }}"
+            echo "Services: All microservices are running and healthy"
+          else
+            echo "❌ PhotoPoo deployment failed!"
+            echo "Deploy Status: $DEPLOY_STATUS"
+            echo "Health Status: $HEALTH_STATUS"
+            exit 1
+          fi

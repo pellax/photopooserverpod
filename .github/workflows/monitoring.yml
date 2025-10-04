@@ -1,0 +1,159 @@
+name: Microservices Monitoring
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  health-monitoring:
+    name: Monitor Service Health
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth, social, posts, chat, users]
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check Service Health
+        id: health-check
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+          ALB_DNS: ${{ secrets.ALB_DNS_NAME }}
+        run: |
+          echo "Checking $SERVICE service health..."
+
+          # Check ECS service status
+          SERVICE_STATUS=$(aws ecs describe-services \
+            --cluster photopoo-cluster-$ENVIRONMENT \
+            --services photopoo-$SERVICE-service-$ENVIRONMENT \
+            --query 'services[0].status' \
+            --output text)
+
+          # Check running task count
+          RUNNING_COUNT=$(aws ecs describe-services \
+            --cluster photopoo-cluster-$ENVIRONMENT \
+            --services photopoo-$SERVICE-service-$ENVIRONMENT \
+            --query 'services[0].runningCount' \
+            --output text)
+
+          # Check desired task count
+          DESIRED_COUNT=$(aws ecs describe-services \
+            --cluster photopoo-cluster-$ENVIRONMENT \
+            --services photopoo-$SERVICE-service-$ENVIRONMENT \
+            --query 'services[0].desiredCount' \
+            --output text)
+
+          echo "Service Status: $SERVICE_STATUS"
+          echo "Running Tasks: $RUNNING_COUNT"
+          echo "Desired Tasks: $DESIRED_COUNT"
+
+          # Check HTTP endpoint health
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://$ALB_DNS/$SERVICE/health" || echo "000")
+          echo "HTTP Health Check: $HTTP_STATUS"
+
+          # Determine overall health
+          if [[ "$SERVICE_STATUS" == "ACTIVE" && "$RUNNING_COUNT" == "$DESIRED_COUNT" && "$HTTP_STATUS" == "200" ]]; then
+            echo "health=healthy" >> $GITHUB_OUTPUT
+            echo "✅ $SERVICE service is healthy"
+          else
+            echo "health=unhealthy" >> $GITHUB_OUTPUT
+            echo "❌ $SERVICE service is unhealthy"
+            echo "  - ECS Status: $SERVICE_STATUS"
+            echo "  - Tasks: $RUNNING_COUNT/$DESIRED_COUNT"
+            echo "  - HTTP: $HTTP_STATUS"
+          fi
+
+      - name: Send Slack Notification on Failure
+        if: steps.health-check.outputs.health == 'unhealthy'
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          if [[ -n "$SLACK_WEBHOOK" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"🚨 PhotoPoo $SERVICE service is unhealthy in $ENVIRONMENT environment\"}" \
+              "$SLACK_WEBHOOK"
+          fi
+
+  performance-monitoring:
+    name: Monitor Performance Metrics
+    runs-on: ubuntu-latest
+    needs: health-monitoring
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Collect CloudWatch Metrics
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          echo "📊 Collecting performance metrics for $ENVIRONMENT..."
+
+          # Get CPU utilization for all services
+          services=("auth" "social" "posts" "chat" "users")
+
+          for service in "${services[@]}"; do
+            echo "--- $service Service Metrics ---"
+
+            # CPU Utilization
+            cpu_avg=$(aws cloudwatch get-metric-statistics \
+              --namespace AWS/ECS \
+              --metric-name CPUUtilization \
+              --dimensions Name=ServiceName,Value=photopoo-$service-service-$ENVIRONMENT Name=ClusterName,Value=photopoo-cluster-$ENVIRONMENT \
+              --start-time $(date -d '10 minutes ago' --iso-8601) \
+              --end-time $(date --iso-8601) \
+              --period 300 \
+              --statistics Average \
+              --query 'Datapoints[0].Average' \
+              --output text 2>/dev/null || echo "N/A")
+
+            # Memory Utilization
+            mem_avg=$(aws cloudwatch get-metric-statistics \
+              --namespace AWS/ECS \
+              --metric-name MemoryUtilization \
+              --dimensions Name=ServiceName,Value=photopoo-$service-service-$ENVIRONMENT Name=ClusterName,Value=photopoo-cluster-$ENVIRONMENT \
+              --start-time $(date -d '10 minutes ago' --iso-8601) \
+              --end-time $(date --iso-8601) \
+              --period 300 \
+              --statistics Average \
+              --query 'Datapoints[0].Average' \
+              --output text 2>/dev/null || echo "N/A")
+
+            echo "CPU: ${cpu_avg}%"
+            echo "Memory: ${mem_avg}%"
+
+            # Alert if high resource usage
+            if [[ "$cpu_avg" != "N/A" && $(echo "$cpu_avg > 80" | bc -l) -eq 1 ]]; then
+              echo "⚠️ HIGH CPU usage detected for $service: ${cpu_avg}%"
+            fi
+
+            if [[ "$mem_avg" != "N/A" && $(echo "$mem_avg > 80" | bc -l) -eq 1 ]]; then
+              echo "⚠️ HIGH Memory usage detected for $service: ${mem_avg}%"
+            fi
+          done

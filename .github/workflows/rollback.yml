@@ -1,0 +1,282 @@
+name: Emergency Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+      services:
+        description: 'Services to rollback (comma-separated or "all")'
+        required: true
+        default: 'all'
+      rollback_strategy:
+        description: 'Rollback strategy'
+        required: true
+        default: 'previous_version'
+        type: choice
+        options:
+          - 'previous_version'
+          - 'specific_version'
+          - 'blue_green_switch'
+      target_version:
+        description: 'Target version (for specific_version strategy)'
+        required: false
+
+env:
+  AWS_REGION: us-west-2
+  ECS_CLUSTER: photopoo-cluster
+
+jobs:
+  validate-rollback:
+    name: Validate Rollback Request
+    runs-on: ubuntu-latest
+    outputs:
+      services_to_rollback: ${{ steps.parse-services.outputs.services }}
+      rollback_confirmed: ${{ steps.confirm.outputs.confirmed }}
+
+    steps:
+      - name: Parse Services List
+        id: parse-services
+        env:
+          SERVICES_INPUT: ${{ github.event.inputs.services }}
+        run: |
+          if [[ "$SERVICES_INPUT" == "all" ]]; then
+            echo "services=auth-service,social-service,posts-service,chat-service,users-service" >> $GITHUB_OUTPUT
+          else
+            echo "services=$SERVICES_INPUT" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Confirm Rollback Operation
+        id: confirm
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          STRATEGY: ${{ github.event.inputs.rollback_strategy }}
+          TARGET_VERSION: ${{ github.event.inputs.target_version }}
+        run: |
+          echo "🚨 ROLLBACK CONFIRMATION 🚨"
+          echo "Environment: $ENVIRONMENT"
+          echo "Strategy: $STRATEGY"
+          echo "Services: ${{ steps.parse-services.outputs.services }}"
+
+          if [[ "$STRATEGY" == "specific_version" && -z "$TARGET_VERSION" ]]; then
+            echo "❌ Target version required for specific_version strategy"
+            exit 1
+          fi
+
+          echo "confirmed=true" >> $GITHUB_OUTPUT
+
+  emergency-rollback:
+    name: Execute Rollback
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    if: needs.validate-rollback.outputs.rollback_confirmed == 'true'
+    strategy:
+      matrix:
+        service: ${{ fromJson(format('["{0}"]', replace(needs.validate-rollback.outputs.services_to_rollback, ',', '","'))) }}
+      fail-fast: false
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get Current Service State
+        id: current-state
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: |
+          # Get current task definition ARN
+          CURRENT_TASK_DEF=$(aws ecs describe-services \
+            --cluster $ECS_CLUSTER-$ENVIRONMENT \
+            --services photopoo-$SERVICE-$ENVIRONMENT \
+            --query 'services[0].taskDefinition' \
+            --output text)
+
+          echo "current_task_definition=$CURRENT_TASK_DEF" >> $GITHUB_OUTPUT
+          echo "Current task definition: $CURRENT_TASK_DEF"
+
+          # Get task definition family and revision
+          FAMILY=$(echo $CURRENT_TASK_DEF | cut -d'/' -f2 | cut -d':' -f1)
+          REVISION=$(echo $CURRENT_TASK_DEF | cut -d':' -f2)
+
+          echo "family=$FAMILY" >> $GITHUB_OUTPUT
+          echo "current_revision=$REVISION" >> $GITHUB_OUTPUT
+
+      - name: Determine Rollback Target
+        id: rollback-target
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          STRATEGY: ${{ github.event.inputs.rollback_strategy }}
+          TARGET_VERSION: ${{ github.event.inputs.target_version }}
+          FAMILY: ${{ steps.current-state.outputs.family }}
+          CURRENT_REVISION: ${{ steps.current-state.outputs.current_revision }}
+        run: |
+          case "$STRATEGY" in
+            "previous_version")
+              # Get previous revision
+              PREV_REVISION=$((CURRENT_REVISION - 1))
+              if [[ $PREV_REVISION -lt 1 ]]; then
+                echo "❌ No previous revision available"
+                exit 1
+              fi
+              TARGET_TASK_DEF="$FAMILY:$PREV_REVISION"
+              ;;
+            "specific_version")
+              TARGET_TASK_DEF="$FAMILY:$TARGET_VERSION"
+              ;;
+            "blue_green_switch")
+              # For blue-green, we would switch traffic to the blue environment
+              # This is a simplified implementation
+              echo "Blue-green rollback not implemented yet"
+              exit 1
+              ;;
+          esac
+
+          echo "target_task_definition=$TARGET_TASK_DEF" >> $GITHUB_OUTPUT
+          echo "Rollback target: $TARGET_TASK_DEF"
+
+      - name: Execute Rollback
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          TARGET_TASK_DEF: ${{ steps.rollback-target.outputs.target_task_definition }}
+        run: |
+          echo "🔄 Rolling back $SERVICE to $TARGET_TASK_DEF..."
+
+          # Verify target task definition exists
+          aws ecs describe-task-definition \
+            --task-definition "$TARGET_TASK_DEF" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text > /dev/null
+
+          if [[ $? -ne 0 ]]; then
+            echo "❌ Target task definition not found: $TARGET_TASK_DEF"
+            exit 1
+          fi
+
+          # Update ECS service with rollback task definition
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER-$ENVIRONMENT \
+            --service photopoo-$SERVICE-$ENVIRONMENT \
+            --task-definition "$TARGET_TASK_DEF" \
+            --force-new-deployment
+
+          echo "✅ Rollback initiated for $SERVICE"
+
+      - name: Wait for Rollback Completion
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: |
+          echo "⏳ Waiting for rollback to complete..."
+
+          # Wait for service to stabilize
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER-$ENVIRONMENT \
+            --services photopoo-$SERVICE-$ENVIRONMENT
+
+          echo "✅ Rollback completed for $SERVICE"
+
+      - name: Verify Rollback Health
+        env:
+          SERVICE: ${{ matrix.service }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          ALB_DNS: ${{ secrets.ALB_DNS_NAME }}
+        run: |
+          echo "🔍 Verifying rollback health..."
+
+          # Wait a moment for the service to fully come online
+          sleep 30
+
+          # Check service health
+          for i in {1..5}; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://$ALB_DNS/$SERVICE/health" || echo "000")
+
+            if [[ "$HTTP_STATUS" == "200" ]]; then
+              echo "✅ $SERVICE rollback health check passed"
+              break
+            else
+              echo "⚠️ $SERVICE health check attempt $i/5 failed (HTTP $HTTP_STATUS)"
+              if [[ $i -eq 5 ]]; then
+                echo "❌ $SERVICE rollback health check failed after 5 attempts"
+                exit 1
+              fi
+              sleep 30
+            fi
+          done
+
+  post-rollback-notification:
+    name: Post-Rollback Notification
+    runs-on: ubuntu-latest
+    needs: [validate-rollback, emergency-rollback]
+    if: always()
+
+    steps:
+      - name: Send Rollback Notification
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          SERVICES: ${{ needs.validate-rollback.outputs.services_to_rollback }}
+          STRATEGY: ${{ github.event.inputs.rollback_strategy }}
+          ROLLBACK_STATUS: ${{ needs.emergency-rollback.result }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ "$ROLLBACK_STATUS" == "success" ]]; then
+            MESSAGE="✅ PhotoPoo rollback completed successfully!"
+            COLOR="good"
+          else
+            MESSAGE="❌ PhotoPoo rollback failed!"
+            COLOR="danger"
+          fi
+
+          MESSAGE="$MESSAGE\n"
+          MESSAGE="${MESSAGE}Environment: $ENVIRONMENT\n"
+          MESSAGE="${MESSAGE}Services: $SERVICES\n"
+          MESSAGE="${MESSAGE}Strategy: $STRATEGY\n"
+          MESSAGE="${MESSAGE}Triggered by: ${{ github.actor }}"
+
+          echo "$MESSAGE"
+
+          # Send to Slack if webhook configured
+          if [[ -n "$SLACK_WEBHOOK" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{
+                \"attachments\": [{
+                  \"color\": \"$COLOR\",
+                  \"title\": \"PhotoPoo Rollback Status\",
+                  \"text\": \"$MESSAGE\"
+                }]
+              }" \
+              "$SLACK_WEBHOOK"
+          fi
+
+      - name: Create Rollback Issue
+        if: needs.emergency-rollback.result == 'failure'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: |
+          # Create GitHub issue for failed rollback
+          gh issue create \
+            --title "🚨 Emergency Rollback Failed - $ENVIRONMENT" \
+            --body "Emergency rollback failed for $ENVIRONMENT environment.
+
+**Details:**
+- Environment: $ENVIRONMENT
+- Services: ${{ needs.validate-rollback.outputs.services_to_rollback }}
+- Strategy: ${{ github.event.inputs.rollback_strategy }}
+- Triggered by: ${{ github.actor }}
+- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+**Action Required:**
+Manual intervention needed to restore service stability." \
+            --label "critical,rollback,ops"

@@ -1,0 +1,534 @@
+name: AWS Infrastructure Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Infrastructure action'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - 'plan'
+          - 'apply'
+          - 'destroy'
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - 'staging'
+          - 'production'
+
+env:
+  AWS_REGION: us-west-2
+  TF_VERSION: '1.5.0'
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Create Terraform Configuration
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: |
+          mkdir -p terraform
+          cd terraform
+
+          # Create main.tf for microservices infrastructure
+          cat > main.tf << 'EOF'
+          terraform {
+            required_version = ">= 1.5.0"
+            required_providers {
+              aws = {
+                source  = "hashicorp/aws"
+                version = "~> 5.0"
+              }
+            }
+            backend "s3" {
+              bucket = "photopoo-terraform-state"
+              key    = "infrastructure/${var.environment}/terraform.tfstate"
+              region = "us-west-2"
+            }
+          }
+
+          provider "aws" {
+            region = var.aws_region
+          }
+
+          variable "environment" {
+            description = "Environment name"
+            type        = string
+          }
+
+          variable "aws_region" {
+            description = "AWS region"
+            type        = string
+            default     = "us-west-2"
+          }
+
+          # VPC Configuration
+          resource "aws_vpc" "photopoo_vpc" {
+            cidr_block           = "10.0.0.0/16"
+            enable_dns_hostnames = true
+            enable_dns_support   = true
+
+            tags = {
+              Name        = "photopoo-vpc-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          # Subnets
+          resource "aws_subnet" "private_subnets" {
+            count             = 2
+            vpc_id            = aws_vpc.photopoo_vpc.id
+            cidr_block        = "10.0.${count.index + 1}.0/24"
+            availability_zone = data.aws_availability_zones.available.names[count.index]
+
+            tags = {
+              Name        = "photopoo-private-subnet-${count.index + 1}-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_subnet" "public_subnets" {
+            count                   = 2
+            vpc_id                  = aws_vpc.photopoo_vpc.id
+            cidr_block              = "10.0.${count.index + 10}.0/24"
+            availability_zone       = data.aws_availability_zones.available.names[count.index]
+            map_public_ip_on_launch = true
+
+            tags = {
+              Name        = "photopoo-public-subnet-${count.index + 1}-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          data "aws_availability_zones" "available" {
+            state = "available"
+          }
+
+          # Internet Gateway
+          resource "aws_internet_gateway" "photopoo_igw" {
+            vpc_id = aws_vpc.photopoo_vpc.id
+
+            tags = {
+              Name        = "photopoo-igw-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          # NAT Gateways
+          resource "aws_eip" "nat_eips" {
+            count  = 2
+            domain = "vpc"
+
+            tags = {
+              Name        = "photopoo-nat-eip-${count.index + 1}-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_nat_gateway" "photopoo_nat" {
+            count         = 2
+            allocation_id = aws_eip.nat_eips[count.index].id
+            subnet_id     = aws_subnet.public_subnets[count.index].id
+
+            tags = {
+              Name        = "photopoo-nat-${count.index + 1}-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          # Route Tables
+          resource "aws_route_table" "public_rt" {
+            vpc_id = aws_vpc.photopoo_vpc.id
+
+            route {
+              cidr_block = "0.0.0.0/0"
+              gateway_id = aws_internet_gateway.photopoo_igw.id
+            }
+
+            tags = {
+              Name        = "photopoo-public-rt-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_route_table" "private_rt" {
+            count  = 2
+            vpc_id = aws_vpc.photopoo_vpc.id
+
+            route {
+              cidr_block     = "0.0.0.0/0"
+              nat_gateway_id = aws_nat_gateway.photopoo_nat[count.index].id
+            }
+
+            tags = {
+              Name        = "photopoo-private-rt-${count.index + 1}-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_route_table_association" "public_rta" {
+            count          = 2
+            subnet_id      = aws_subnet.public_subnets[count.index].id
+            route_table_id = aws_route_table.public_rt.id
+          }
+
+          resource "aws_route_table_association" "private_rta" {
+            count          = 2
+            subnet_id      = aws_subnet.private_subnets[count.index].id
+            route_table_id = aws_route_table.private_rt[count.index].id
+          }
+
+          # ECS Cluster
+          resource "aws_ecs_cluster" "photopoo_cluster" {
+            name = "photopoo-cluster-${var.environment}"
+
+            setting {
+              name  = "containerInsights"
+              value = "enabled"
+            }
+
+            tags = {
+              Environment = var.environment
+            }
+          }
+
+          # ECR Repositories
+          resource "aws_ecr_repository" "photopoo_repos" {
+            for_each = toset(["auth", "social", "posts", "chat", "users"])
+            name     = "photopoo-${each.key}"
+
+            image_scanning_configuration {
+              scan_on_push = true
+            }
+
+            tags = {
+              Environment = var.environment
+              Service     = each.key
+            }
+          }
+
+          # RDS (PostgreSQL)
+          resource "aws_db_subnet_group" "photopoo_db_subnet_group" {
+            name       = "photopoo-db-subnet-group-${var.environment}"
+            subnet_ids = aws_subnet.private_subnets[*].id
+
+            tags = {
+              Name        = "photopoo-db-subnet-group-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_security_group" "photopoo_db_sg" {
+            name_prefix = "photopoo-db-sg-${var.environment}"
+            vpc_id      = aws_vpc.photopoo_vpc.id
+
+            ingress {
+              from_port       = 5432
+              to_port         = 5432
+              protocol        = "tcp"
+              security_groups = [aws_security_group.photopoo_ecs_sg.id]
+            }
+
+            egress {
+              from_port   = 0
+              to_port     = 0
+              protocol    = "-1"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            tags = {
+              Name        = "photopoo-db-sg-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_db_instance" "photopoo_db" {
+            identifier             = "photopoo-db-${var.environment}"
+            engine                 = "postgres"
+            engine_version         = "16.3"
+            instance_class         = var.environment == "production" ? "db.t3.medium" : "db.t3.micro"
+            allocated_storage      = var.environment == "production" ? 100 : 20
+            storage_type           = "gp2"
+            storage_encrypted      = true
+
+            db_name  = "photopooserverpod"
+            username = "postgres"
+            password = random_password.db_password.result
+
+            vpc_security_group_ids = [aws_security_group.photopoo_db_sg.id]
+            db_subnet_group_name   = aws_db_subnet_group.photopoo_db_subnet_group.name
+
+            backup_retention_period = var.environment == "production" ? 7 : 1
+            backup_window          = "03:00-04:00"
+            maintenance_window     = "sun:04:00-sun:05:00"
+
+            skip_final_snapshot = true
+            deletion_protection = var.environment == "production" ? true : false
+
+            tags = {
+              Name        = "photopoo-db-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "random_password" "db_password" {
+            length  = 16
+            special = true
+          }
+
+          # ElastiCache (Redis)
+          resource "aws_elasticache_subnet_group" "photopoo_redis_subnet_group" {
+            name       = "photopoo-redis-subnet-group-${var.environment}"
+            subnet_ids = aws_subnet.private_subnets[*].id
+
+            tags = {
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_security_group" "photopoo_redis_sg" {
+            name_prefix = "photopoo-redis-sg-${var.environment}"
+            vpc_id      = aws_vpc.photopoo_vpc.id
+
+            ingress {
+              from_port       = 6379
+              to_port         = 6379
+              protocol        = "tcp"
+              security_groups = [aws_security_group.photopoo_ecs_sg.id]
+            }
+
+            egress {
+              from_port   = 0
+              to_port     = 0
+              protocol    = "-1"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            tags = {
+              Name        = "photopoo-redis-sg-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_elasticache_replication_group" "photopoo_redis" {
+            replication_group_id       = "photopoo-redis-${var.environment}"
+            description                = "PhotoPoo Redis cluster for ${var.environment}"
+
+            node_type                  = var.environment == "production" ? "cache.t3.medium" : "cache.t3.micro"
+            port                       = 6379
+            parameter_group_name       = "default.redis7"
+
+            num_cache_clusters         = var.environment == "production" ? 2 : 1
+
+            subnet_group_name          = aws_elasticache_subnet_group.photopoo_redis_subnet_group.name
+            security_group_ids         = [aws_security_group.photopoo_redis_sg.id]
+
+            at_rest_encryption_enabled = true
+            transit_encryption_enabled = true
+            auth_token                 = random_password.redis_password.result
+
+            tags = {
+              Environment = var.environment
+            }
+          }
+
+          resource "random_password" "redis_password" {
+            length  = 32
+            special = false
+          }
+
+          # Application Load Balancer
+          resource "aws_security_group" "photopoo_alb_sg" {
+            name_prefix = "photopoo-alb-sg-${var.environment}"
+            vpc_id      = aws_vpc.photopoo_vpc.id
+
+            ingress {
+              from_port   = 80
+              to_port     = 80
+              protocol    = "tcp"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            ingress {
+              from_port   = 443
+              to_port     = 443
+              protocol    = "tcp"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            egress {
+              from_port   = 0
+              to_port     = 0
+              protocol    = "-1"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            tags = {
+              Name        = "photopoo-alb-sg-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_lb" "photopoo_alb" {
+            name               = "photopoo-alb-${var.environment}"
+            internal           = false
+            load_balancer_type = "application"
+            security_groups    = [aws_security_group.photopoo_alb_sg.id]
+            subnets            = aws_subnet.public_subnets[*].id
+
+            tags = {
+              Environment = var.environment
+            }
+          }
+
+          # ECS Security Group
+          resource "aws_security_group" "photopoo_ecs_sg" {
+            name_prefix = "photopoo-ecs-sg-${var.environment}"
+            vpc_id      = aws_vpc.photopoo_vpc.id
+
+            ingress {
+              from_port       = 8080
+              to_port         = 8082
+              protocol        = "tcp"
+              security_groups = [aws_security_group.photopoo_alb_sg.id]
+            }
+
+            egress {
+              from_port   = 0
+              to_port     = 0
+              protocol    = "-1"
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            tags = {
+              Name        = "photopoo-ecs-sg-${var.environment}"
+              Environment = var.environment
+            }
+          }
+
+          # ECS Task Execution Role
+          resource "aws_iam_role" "photopoo_ecs_task_execution_role" {
+            name = "photopoo-ecs-task-execution-role-${var.environment}"
+
+            assume_role_policy = jsonencode({
+              Version = "2012-10-17"
+              Statement = [
+                {
+                  Action = "sts:AssumeRole"
+                  Effect = "Allow"
+                  Principal = {
+                    Service = "ecs-tasks.amazonaws.com"
+                  }
+                }
+              ]
+            })
+
+            tags = {
+              Environment = var.environment
+            }
+          }
+
+          resource "aws_iam_role_policy_attachment" "photopoo_ecs_task_execution_role_policy" {
+            role       = aws_iam_role.photopoo_ecs_task_execution_role.name
+            policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+          }
+
+          # Outputs
+          output "vpc_id" {
+            value = aws_vpc.photopoo_vpc.id
+          }
+
+          output "private_subnet_ids" {
+            value = aws_subnet.private_subnets[*].id
+          }
+
+          output "public_subnet_ids" {
+            value = aws_subnet.public_subnets[*].id
+          }
+
+          output "ecs_cluster_name" {
+            value = aws_ecs_cluster.photopoo_cluster.name
+          }
+
+          output "alb_dns_name" {
+            value = aws_lb.photopoo_alb.dns_name
+          }
+
+          output "db_endpoint" {
+            value     = aws_db_instance.photopoo_db.endpoint
+            sensitive = true
+          }
+
+          output "redis_endpoint" {
+            value     = aws_elasticache_replication_group.photopoo_redis.primary_endpoint_address
+            sensitive = true
+          }
+
+          output "ecr_repositories" {
+            value = {
+              for k, v in aws_ecr_repository.photopoo_repos : k => v.repository_url
+            }
+          }
+          EOF
+
+          # Create variables file
+          cat > terraform.tfvars << EOF
+          environment = "${ENVIRONMENT}"
+          aws_region  = "${AWS_REGION}"
+          EOF
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply'
+        working-directory: terraform
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        working-directory: terraform
+        run: terraform destroy -auto-approve -var-file="terraform.tfvars"
+
+      - name: Save Infrastructure Outputs
+        if: github.event.inputs.action == 'apply'
+        working-directory: terraform
+        run: |
+          terraform output -json > ../infrastructure-outputs.json
+          echo "Infrastructure outputs saved to infrastructure-outputs.json"
+
+      - name: Upload Infrastructure Outputs
+        if: github.event.inputs.action == 'apply'
+        uses: actions/upload-artifact@v4
+        with:
+          name: infrastructure-outputs-${{ github.event.inputs.environment }}
+          path: infrastructure-outputs.json

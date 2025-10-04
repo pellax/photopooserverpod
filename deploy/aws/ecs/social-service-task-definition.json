@@ -1,0 +1,64 @@
+{
+  "family": "photopoo-social-service",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/photopoo-ecs-task-execution-role",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/photopoo-ecs-task-role",
+  "containerDefinitions": [
+    {
+      "name": "photopoo-social-service",
+      "image": "ECR_REGISTRY/photopoo-social:IMAGE_TAG",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/photopoo-social-service",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": [
+        {
+          "name": "ENVIRONMENT",
+          "value": "ENVIRONMENT_VALUE"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://postgres:PASSWORD@DB_ENDPOINT:5432/photopooserverpod"
+        },
+        {
+          "name": "REDIS_URL",
+          "value": "redis://:PASSWORD@REDIS_ENDPOINT:6379"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-west-2:ACCOUNT_ID:secret:photopoo-db-password"
+        },
+        {
+          "name": "REDIS_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-west-2:ACCOUNT_ID:secret:photopoo-redis-password"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
